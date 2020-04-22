@@ -1,6 +1,7 @@
 package com.example.exam2020_certificateapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
