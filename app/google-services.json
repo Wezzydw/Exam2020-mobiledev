@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "460955074823",
+    "firebase_url": "https://certificate-project-fbc50.firebaseio.com",
+    "project_id": "certificate-project-fbc50",
+    "storage_bucket": "certificate-project-fbc50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:460955074823:android:83f31e83e42d840949c5a2",
+        "android_client_info": {
+          "package_name": "com.example.exam2020_certificateapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "460955074823-2eblsg9btqhhqpbdl1baucrpm5did37e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9tMuh0ZX80bWzhh6ep0C44kStdpbEVIg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "460955074823-2eblsg9btqhhqpbdl1baucrpm5did37e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
