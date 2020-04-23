@@ -11,6 +11,7 @@ public class User implements Serializable {
     private String mName;
     private String mPhone;
     private Image mImage;
+    private String[] mCertificateList;
 
     public User(String name, String email, String uId, String userName) {
         mName = name;
@@ -50,5 +51,25 @@ public class User implements Serializable {
 
     public String getmUserName() {
         return mUserName;
+    }
+
+    public String[] getmCertificateList() {
+        return mCertificateList;
+    }
+
+    public void setmCertificateList(String[] mCertificateList) {
+        this.mCertificateList = mCertificateList;
+    }
+
+    public void setmEmail(String mEmail) {
+        this.mEmail = mEmail;
+    }
+
+    public void setmName(String mName) {
+        this.mName = mName;
+    }
+
+    public void setmUserName(String mUserName) {
+        this.mUserName = mUserName;
     }
 }
