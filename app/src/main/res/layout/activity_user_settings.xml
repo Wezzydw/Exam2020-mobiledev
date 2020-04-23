@@ -22,6 +22,37 @@
         app:srcCompat="@drawable/common_full_open_on_phone"
         android:layout_weight="1"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/settingsBtnTakePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+
+            app:srcCompat="@android:drawable/ic_btn_speak_now" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/settingsBtnUploadPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            app:srcCompat="@drawable/common_full_open_on_phone" />
+    </LinearLayout>
+
     <EditText
         android:id="@+id/settingsInputName"
         android:layout_width="match_parent"
@@ -57,35 +88,11 @@
         android:layout_height="341dp"
         android:layout_weight="1"/>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/settingsBtnDeleteUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="horizontal">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/settingsBtnTakePicture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="10dp"
-            android:clickable="true"
-
-            app:srcCompat="@android:drawable/ic_btn_speak_now" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/settingsBtnUploadPicture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:clickable="true"
-            app:srcCompat="@drawable/common_full_open_on_phone" />
-    </LinearLayout>
+        android:text="Button" />
 
 </LinearLayout>

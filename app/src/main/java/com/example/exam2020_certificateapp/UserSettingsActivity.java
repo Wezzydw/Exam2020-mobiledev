@@ -130,5 +130,10 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     }
 
+    void deleteUser() {
+        //POPUP
+        //firebase deleteuser
+    }
+
 
 }
