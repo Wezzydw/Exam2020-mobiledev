@@ -40,7 +40,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     int MY_PERMISSIONS_REQUEST_CAMERA;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
     String mName = "";
-    FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+   // FirebaseFirestore mDb = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
