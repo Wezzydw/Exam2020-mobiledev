@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserSettingsActivity"
     android:orientation="vertical"
-    >
+    tools:context=".UserSettingsActivity">
 
     <ImageButton
         android:id="@+id/settingsBtnReturn"
@@ -19,8 +18,8 @@
         android:id="@+id/settingsImageView"
         android:layout_width="match_parent"
         android:layout_height="146dp"
-        app:srcCompat="@drawable/common_full_open_on_phone"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        app:srcCompat="@drawable/common_full_open_on_phone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,42 +56,43 @@
         android:id="@+id/settingsInputName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Name"
         android:layout_weight="1"
-        android:textAlignment="center"/>
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:textAlignment="center" />
 
     <EditText
         android:id="@+id/settingsInputEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:hint="@string/prompt_email"
         android:layout_weight="1"
-        android:textAlignment="center"/>
+        android:ems="10"
+        android:hint="@string/prompt_email"
+        android:inputType="textEmailAddress"
+        android:textAlignment="center" />
 
     <EditText
         android:id="@+id/settingsInputPhone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="phone"
-        android:hint="@android:string/emptyPhoneNumber"
         android:layout_weight="1"
-        android:textAlignment="center"/>
+        android:ems="10"
+        android:hint="@android:string/emptyPhoneNumber"
+        android:inputType="phone"
+        android:textAlignment="center" />
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="341dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/settingsBtnDeleteUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Button" />
+        android:backgroundTint="#DF1212"
+        android:text="Delete Account" />
 
 </LinearLayout>

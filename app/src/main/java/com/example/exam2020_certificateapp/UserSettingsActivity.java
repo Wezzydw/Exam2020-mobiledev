@@ -1,11 +1,13 @@
 package com.example.exam2020_certificateapp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,6 +17,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -29,10 +32,13 @@ public class UserSettingsActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_UPLOAD = 2;
     FloatingActionButton btnTakePicture;
     FloatingActionButton btnGetGalleryPicture;
+    Button btnDeleteUser;
     ImageView imageViewProfilePicture;
     ImageButton btnGoBack;
+    EditText editTextName;
     int  MY_PERMISSIONS_REQUEST_CAMERA;
     int  MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
+    String name = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,8 @@ public class UserSettingsActivity extends AppCompatActivity {
         btnGetGalleryPicture = findViewById(R.id.settingsBtnUploadPicture);
         imageViewProfilePicture = findViewById(R.id.settingsImageView);
         btnGoBack = findViewById(R.id.settingsBtnReturn);
+        btnDeleteUser = findViewById(R.id.settingsBtnDeleteUser);
+        editTextName = findViewById(R.id.settingsInputName);
 
 
         View.OnClickListener buttons = new View.OnClickListener() {
@@ -59,6 +67,9 @@ public class UserSettingsActivity extends AppCompatActivity {
                     case R.id.settingsBtnUploadPicture:
                         uploadImage();
                         break;
+                    case R.id.settingsBtnDeleteUser:
+                        deleteUserPromt();
+                        break;
                 }
             }
         };
@@ -66,6 +77,7 @@ public class UserSettingsActivity extends AppCompatActivity {
         btnTakePicture.setOnClickListener(buttons);
         btnGoBack.setOnClickListener(buttons);
         btnGetGalleryPicture.setOnClickListener(buttons);
+        btnDeleteUser.setOnClickListener(buttons);
 
     }
 
@@ -121,19 +133,76 @@ public class UserSettingsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
     }
 
     void returnToActivity() {
-
+promtForSaveSettings();
         //Save all data changes to firebase
-        finish();
+
 
     }
 
-    void deleteUser() {
-        //POPUP
-        //firebase deleteuser
+    void deleteUserPromt() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("DeleteUser");
+        builder.setMessage("ARE YUO SURE YOY WAN TTO DELETE YOUR ACOUNT????!!?");
+        builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                fireBaseDeleteAccount();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
+    void fireBaseDeleteAccount() {
+        editTextName.setText("Virker");
+        //Delete user from firebase here
+    }
+
+
+    void saveSettings()
+    {
+        editTextName.setText("Changes Saved");
+    }
+
+    void promtForSaveSettings() {
+        //editTextName.setText("Checking save");
+        if(!name.equals(editTextName.getText().toString()))
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Savesettings");
+            builder.setMessage("Save changes?");
+            builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    saveSettings();
+                    finish();
+                    dialog.dismiss();
+
+                }
+            });
+            builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+        else {
+            finish();
+        }
+    }
 
 }
