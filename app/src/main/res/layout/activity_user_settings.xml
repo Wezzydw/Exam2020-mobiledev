@@ -63,6 +63,15 @@
         android:textAlignment="center" />
 
     <EditText
+        android:id="@+id/settingsInputUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name" />
+
+    <EditText
         android:id="@+id/settingsInputEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -81,6 +90,16 @@
         android:hint="@android:string/emptyPhoneNumber"
         android:inputType="phone"
         android:textAlignment="center" />
+
+    <EditText
+        android:id="@+id/settingsInputPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:hint="New Password"
+        android:inputType="textPassword"
+        android:textAlignment="center"/>
 
     <Space
         android:layout_width="match_parent"

@@ -36,6 +36,11 @@ public class UserSettingsActivity extends AppCompatActivity {
     ImageView mImageViewProfilePicture;
     ImageButton mBtnGoBack;
     EditText mEditTextName;
+    EditText mEditTextUsername;
+    EditText mEditTextPassword;
+    EditText mEditTextPhone;
+    EditText mEditTextEmail;
+
     int MY_PERMISSIONS_REQUEST_CAMERA;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
     String mName = "";
@@ -51,9 +56,12 @@ public class UserSettingsActivity extends AppCompatActivity {
         mImageViewProfilePicture = findViewById(R.id.settingsImageView);
         mBtnGoBack = findViewById(R.id.settingsBtnReturn);
         mBtnDeleteUser = findViewById(R.id.settingsBtnDeleteUser);
+
         mEditTextName = findViewById(R.id.settingsInputName);
-
-
+         mEditTextUsername = findViewById(R.id.settingsInputUsername);
+         mEditTextPassword = findViewById(R.id.settingsInputPassword);
+         mEditTextPhone = findViewById(R.id.settingsInputPhone);
+         mEditTextEmail = findViewById(R.id.settingsInputEmail);
         View.OnClickListener buttons = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,17 +167,15 @@ public class UserSettingsActivity extends AppCompatActivity {
     }
 
     void fireBaseDeleteAccount() {
-        //editTextName.setText("Virker");
         //Delete user from firebase here
     }
 
 
     void saveSettings() {
-        //editTextName.setText("Changes Saved");
+
     }
 
     void promtForSaveSettings() {
-        //editTextName.setText("Checking save");
         if (!mName.equals(mEditTextName.getText().toString())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Savesettings");
