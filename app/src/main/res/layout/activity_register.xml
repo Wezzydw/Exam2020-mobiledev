@@ -11,118 +11,6 @@
         android:layout_height="wrap_content"
         app:srcCompat="@mipmap/ic_launcher" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Name: " />
-
-        <EditText
-            android:id="@+id/editName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Email: " />
-
-        <EditText
-            android:id="@+id/editEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Email" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Username: " />
-
-        <EditText
-            android:id="@+id/editUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Username" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Password: " />
-
-        <EditText
-            android:id="@+id/editPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPassword" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textConfirmPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Confirm password: " />
-
-        <EditText
-            android:id="@+id/editConfirmPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPassword" />
-
-    </LinearLayout>
-
     <GridLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -150,7 +38,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Name" />
+            android:hint="Name" />
         <TextView
             android:id="@+id/registerTextEmail"
             android:layout_row="1"
@@ -169,7 +57,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Email" />
+            android:hint="Email" />
         <TextView
             android:id="@+id/registerTextUsername"
             android:layout_row="2"
@@ -188,7 +76,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Username" />
+            android:hint="Username" />
 
         <TextView
             android:id="@+id/registerTextPassword"
@@ -209,6 +97,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:ems="10"
+            android:hint="Password"
             android:inputType="textPassword" />
         <TextView
             android:id="@+id/registerTextConfirmPassword"
@@ -229,6 +118,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:ems="10"
+            android:hint="Enter your password again"
             android:inputType="textPassword" />
 
     </GridLayout>
