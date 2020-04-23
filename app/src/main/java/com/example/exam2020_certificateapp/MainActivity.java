@@ -15,10 +15,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.w3c.dom.Document;
 
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mDb;
     private String TAG = "XYZ";
 
 
@@ -26,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mDb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
         setContentView(R.layout.activity_main);
@@ -39,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void login(View view) {
-        Log.d(TAG, "fejlerino");
-
+        
         EditText getEmail = findViewById(R.id.loginEtUsername);
         EditText getPassword = findViewById(R.id.loginEtPassword);
 
@@ -55,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            
+                            getUser(user.getUid());
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -67,5 +75,24 @@ public class MainActivity extends AppCompatActivity {
                     }
                     // ...
                 });
+    }
+
+    private Object getUser(String uid) {
+        DocumentReference docRef = mDb.collection("users").document(uid);
+        docRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+        return null;
     }
 }
