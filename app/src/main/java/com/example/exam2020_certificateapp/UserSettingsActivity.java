@@ -1,12 +1,12 @@
 package com.example.exam2020_certificateapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,16 +15,25 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserSettingsActivity extends AppCompatActivity {
 
@@ -40,18 +49,20 @@ public class UserSettingsActivity extends AppCompatActivity {
     EditText mEditTextPassword;
     EditText mEditTextPhone;
     EditText mEditTextEmail;
-
+    String TAG = "xyz";
     Object mUser;
 
     int MY_PERMISSIONS_REQUEST_CAMERA;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
     String mName = "";
-   // FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+    private FirebaseFirestore mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_settings);
+
+        mDb = FirebaseFirestore.getInstance();
 
         mBtnTakePicture = findViewById(R.id.settingsBtnTakePicture);
         mBtnGetGalleryPicture = findViewById(R.id.settingsBtnUploadPicture);
@@ -89,7 +100,6 @@ public class UserSettingsActivity extends AppCompatActivity {
         mBtnGoBack.setOnClickListener(buttons);
         mBtnGetGalleryPicture.setOnClickListener(buttons);
         mBtnDeleteUser.setOnClickListener(buttons);
-
 
         Object mUser = (Object) getIntent().getSerializableExtra("usersomethinghere");
 
@@ -157,7 +167,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     }
 
     void returnToActivity() {
-        promtForSaveSettings();
+        promptForSaveSettings();
         //Save all data changes to firebase
 
 
@@ -192,15 +202,35 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     void saveSettings() {
         //save settings
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", "mUser.name");
+        user.put("username", "mUser.username");
+        user.put("password", "mUser.password");
+        user.put("email", "mUser.email");
+        user.put("phone", "phone");
+
+        mDb.collection("users").document().set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                succesSaving.show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast errorSavingChanges = Toast.makeText(UserSettingsActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
+                errorSavingChanges.show();
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
-        promtForSaveSettings();
+        promptForSaveSettings();
     }
 
 
-    void promtForSaveSettings() {
+    void promptForSaveSettings() {
         if (!mName.equals(mEditTextName.getText().toString())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Savesettings");
