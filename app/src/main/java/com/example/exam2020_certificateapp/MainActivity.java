@@ -4,24 +4,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
+
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import org.w3c.dom.Document;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,11 +31,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         mDb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        setContentView(R.layout.activity_main);
+
 
     }
 
@@ -48,12 +47,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void login(View view) {
-        
-        EditText getEmail = findViewById(R.id.loginEtUsername);
+
+        final EditText getEmail = findViewById(R.id.loginEtUsername);
         EditText getPassword = findViewById(R.id.loginEtPassword);
 
-        String email = getEmail.getText().toString();
-        String password = getPassword.getText().toString();
+        final String email = getEmail.getText().toString();
+        final String password = getPassword.getText().toString();
+
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -66,10 +66,12 @@ public class MainActivity extends AppCompatActivity {
                             getUser(user.getUid());
                         } else {
                             // If sign in fails, display a message to the user.
+                            getEmail.setTextColor(Color.RED);
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-
+                            Snackbar authError = Snackbar.make(findViewById(R.id.MainActivity),
+                                    "Wrong email/username or password.",
+                                    Snackbar.LENGTH_SHORT);
+                            authError.show();
                         }
 
                     }
@@ -95,4 +97,6 @@ public class MainActivity extends AppCompatActivity {
                 });
         return null;
     }
+
+
 }
