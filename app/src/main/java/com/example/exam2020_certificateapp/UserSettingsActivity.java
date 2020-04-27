@@ -36,6 +36,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -156,14 +157,38 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            //Takes IMAGE from camera
+            //Uri uri = data.getData();
+
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] test = stream.toByteArray();
+            StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+            UploadTask uploadTask = ref.putBytes(test);
+            Log.e("Original   dimensions", imageBitmap.getWidth()+" "+imageBitmap.getHeight());
+            //Log.e("Compressed dimensions", decoded.getWidth()+" "+decoded.getHeight());
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(UserSettingsActivity.this, "IT WORKS", Toast.LENGTH_LONG).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(UserSettingsActivity.this, "Error upload camera image", Toast.LENGTH_LONG).show();
+                }
+            });
             mImageViewProfilePicture.setImageBitmap(imageBitmap);
+            //uploadImageToFirebase(uri);
 
-            //Upload to firebase here
         } else if (requestCode == REQUEST_IMAGE_UPLOAD && resultCode == RESULT_OK) {
-
+            //takes Image from storage/SD
             Uri uri = data.getData();
             try {
                 InputStream imageStream = getContentResolver().openInputStream(uri);
@@ -174,6 +199,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
 
     }
 
