@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,11 +30,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class UserSettingsActivity extends AppCompatActivity {
 
@@ -56,11 +63,16 @@ public class UserSettingsActivity extends AppCompatActivity {
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
     String mName = "";
     private FirebaseFirestore mDb;
+    FirebaseStorage storage;
+    StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_settings);
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
         mDb = FirebaseFirestore.getInstance();
 
@@ -147,7 +159,6 @@ public class UserSettingsActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-
             mImageViewProfilePicture.setImageBitmap(imageBitmap);
 
             //Upload to firebase here
@@ -158,12 +169,42 @@ public class UserSettingsActivity extends AppCompatActivity {
                 InputStream imageStream = getContentResolver().openInputStream(uri);
                 Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
                 mImageViewProfilePicture.setImageBitmap(bitmap);
-                //upload bitmap
+                uploadImageToFirebase(uri);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
+    }
+
+    void uploadImageToFirebase(Uri filepath) {
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Uploading");
+        progressDialog.show();
+        StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+        ref.putFile(filepath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                progressDialog.dismiss();
+                Toast.makeText(UserSettingsActivity.this, "Image has been uploaded succesfully", Toast.LENGTH_LONG).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                Toast
+                        .makeText(UserSettingsActivity.this,
+                                "Failed " + e.getMessage(),
+                                Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                progressDialog.setMessage("Uploaded" + (int) progress + "%");
+            }
+        });
     }
 
     void returnToActivity() {
@@ -196,7 +237,8 @@ public class UserSettingsActivity extends AppCompatActivity {
     }
 
     void fireBaseDeleteAccount() {
-        //Delete user from firebase here
+        mDb.collection("user").document("mUserUID").delete();
+        //Delete certificates with functions
     }
 
 
@@ -208,6 +250,7 @@ public class UserSettingsActivity extends AppCompatActivity {
         user.put("password", "mUser.password");
         user.put("email", "mUser.email");
         user.put("phone", "phone");
+
 
         mDb.collection("users").document().set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
