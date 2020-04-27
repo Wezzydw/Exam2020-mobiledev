@@ -1,11 +1,10 @@
 package com.example.exam2020_certificateapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,22 +14,17 @@ import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -64,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void createAccount(final String email, String password, final String name, final String userName, String confirmPassword) {
+    private void createAccount(final String email, String password, final String name, final String userName) {
         Log.d(TAG, "createAccount:" + email);
 
 
@@ -73,7 +67,6 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             User user = new User(name,email,firebaseUser.getUid(), userName);
@@ -81,8 +74,6 @@ public class RegisterActivity extends AppCompatActivity {
                             // firebaseUser.sendEmailVerification();
                             createUserInDb(user);
                             redirectToLogin();
-
-                            //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -137,11 +128,15 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.d(TAG, "username exist " + un);
                     if (userName.equals(un)) {
                         Log.d(TAG, "found username match");
+                        Toast.makeText(RegisterActivity.this, "Username is already in use",
+                                Toast.LENGTH_SHORT).show();
+                        EditText registerTextUserName = findViewById(R.id.registerEditUsername);
+                        registerTextUserName.setTextColor(Color.RED);
                         exists = true;
                     }
                 }
                 if(!exists) {
-                    createAccount(email, password, name, userName, confirmPassword);
+                    createAccount(email, password, name, userName);
                 }
             }
         });
