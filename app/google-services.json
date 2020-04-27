@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "460955074823-nap5bc43l86be80vhrfv2jqrsf6i6emt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.exam2020_certificateapp",
+            "certificate_hash": "ef99d48e746b70c5e08cb49efae2efbb1807f970"
+          }
+        },
+        {
           "client_id": "460955074823-2eblsg9btqhhqpbdl1baucrpm5did37e.apps.googleusercontent.com",
           "client_type": 3
         }
