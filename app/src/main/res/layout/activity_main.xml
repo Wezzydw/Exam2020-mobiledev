@@ -42,7 +42,9 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:text="Username"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:maxWidth="50dp"
+            />
         <TextView
             android:id="@+id/loginPassword"
             android:textAlignment="center"
@@ -62,6 +64,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
+            android:maxWidth="50dp"
             android:inputType="textPassword"
             />
 
