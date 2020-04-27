@@ -13,6 +13,10 @@ public class User implements Serializable {
     private Image mImage;
     private String[] mCertificateList;
 
+    public User() {
+
+    }
+
     public User(String name, String email, String uId, String userName) {
         mName = name;
         mEmail = email;
