@@ -41,6 +41,8 @@ public class UserSettingsActivity extends AppCompatActivity {
     EditText mEditTextPhone;
     EditText mEditTextEmail;
 
+    Object mUser;
+
     int MY_PERMISSIONS_REQUEST_CAMERA;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
     String mName = "";
@@ -88,6 +90,22 @@ public class UserSettingsActivity extends AppCompatActivity {
         mBtnGetGalleryPicture.setOnClickListener(buttons);
         mBtnDeleteUser.setOnClickListener(buttons);
 
+
+        Object mUser = (Object) getIntent().getSerializableExtra("usersomethinghere");
+
+        if(mUser != null)
+        {
+            initializeDisplayOfData();
+        }
+
+    }
+
+    void initializeDisplayOfData(){
+        mEditTextEmail.setText("");
+        mEditTextName.setText("");
+        mEditTextPassword.setText("");
+        mEditTextPhone.setText("");
+        mEditTextUsername.setText("NoUserNameYet");
     }
 
     void openCamera() {
@@ -153,6 +171,7 @@ public class UserSettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fireBaseDeleteAccount();
+                finish();
                 dialog.dismiss();
             }
         });
@@ -172,8 +191,14 @@ public class UserSettingsActivity extends AppCompatActivity {
 
 
     void saveSettings() {
-
+        //save settings
     }
+
+    @Override
+    public void onBackPressed() {
+        promtForSaveSettings();
+    }
+
 
     void promtForSaveSettings() {
         if (!mName.equals(mEditTextName.getText().toString())) {
@@ -192,6 +217,7 @@ public class UserSettingsActivity extends AppCompatActivity {
             builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    finish();
                     dialog.dismiss();
                 }
             });

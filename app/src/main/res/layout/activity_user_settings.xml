@@ -69,7 +69,8 @@
         android:layout_weight="1"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name" />
+        android:hint="Username"
+        android:textAlignment="center"/>
 
     <EditText
         android:id="@+id/settingsInputEmail"
@@ -103,7 +104,7 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="341dp"
+        android:layout_height="164dp"
         android:layout_weight="1" />
 
     <Button
