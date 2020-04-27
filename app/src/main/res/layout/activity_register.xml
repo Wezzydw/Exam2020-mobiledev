@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/RegisterActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -38,7 +39,8 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:hint="Name"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
 
         <TextView
             android:id="@+id/registerTextEmail"
@@ -59,7 +61,8 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:hint="Email"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
 
         <TextView
             android:id="@+id/registerTextUsername"
@@ -69,7 +72,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Username: " />
+            android:text="Username: "/>
 
         <EditText
             android:id="@+id/registerEditUsername"
@@ -80,7 +83,8 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:hint="Username"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
 
         <TextView
             android:id="@+id/registerTextPassword"
@@ -103,7 +107,8 @@
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
 
         <TextView
             android:id="@+id/registerTextConfirmPassword"
@@ -126,7 +131,8 @@
             android:ems="10"
             android:hint="Enter your password again"
             android:inputType="textPassword"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
 
     </GridLayout>
 

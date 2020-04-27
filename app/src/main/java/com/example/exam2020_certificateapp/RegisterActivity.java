@@ -10,12 +10,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -77,8 +77,8 @@ public class RegisterActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(RegisterActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Snackbar emailFail = Snackbar.make(findViewById(R.id.RegisterActivity), "The email is already in use", Snackbar.LENGTH_LONG);
+                            emailFail.show();
                         }
                     }
                 });
@@ -89,17 +89,20 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean validateUser(String email, String name, String userName) {
         if (email == null || email.isEmpty()) {
-            // throw new error or exeption or make a message
+            Snackbar emailFail = Snackbar.make(findViewById(R.id.RegisterActivity), "Email can not be empty", Snackbar.LENGTH_LONG);
+            emailFail.show();
             Log.d(TAG, "must be a valid email");
             return false;
         }
         if (name == null || name.isEmpty()) {
-            // throw new error or exeption or make a message
+            Snackbar nameFail = Snackbar.make(findViewById(R.id.RegisterActivity), "Name can not be empty", Snackbar.LENGTH_LONG);
+            nameFail.show();
             Log.d(TAG, "name can not be null or empty");
             return false;
         }
         if (userName == null || userName.isEmpty()) {
-            // throw new error or exeption or make a message
+            Snackbar userNameFail = Snackbar.make(findViewById(R.id.RegisterActivity), "UserName can not be empty", Snackbar.LENGTH_LONG);
+            userNameFail.show();
             Log.d(TAG, "user name can not be null or empty");
             return false;
         }
@@ -128,8 +131,8 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.d(TAG, "username exist " + un);
                     if (userName.equals(un)) {
                         Log.d(TAG, "found username match");
-                        Toast.makeText(RegisterActivity.this, "Username is already in use",
-                                Toast.LENGTH_SHORT).show();
+                        Snackbar userNameFail = Snackbar.make(findViewById(R.id.RegisterActivity), "The username is already in use", Snackbar.LENGTH_LONG);
+                        userNameFail.show();
                         EditText registerTextUserName = findViewById(R.id.registerEditUsername);
                         registerTextUserName.setTextColor(Color.RED);
                         exists = true;
@@ -145,10 +148,14 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean passwordCheck(String password, String confirmPassword) {
         if (!password.equals(confirmPassword)) {
-            Log.d(TAG, "the 2 passwords are not hte same");
+            Snackbar passwordFail = Snackbar.make(findViewById(R.id.RegisterActivity), "The 2 passwords are not identical", Snackbar.LENGTH_LONG);
+            passwordFail.show();
+            Log.d(TAG, "the 2 passwords are not the same");
             return false;
         }
         if (password.length()<6) {
+            Snackbar passwordFail = Snackbar.make(findViewById(R.id.RegisterActivity), "Password have to be at least 6 characters long", Snackbar.LENGTH_LONG);
+            passwordFail.show();
             Log.d(TAG, "password too short");
             return false;
         }
