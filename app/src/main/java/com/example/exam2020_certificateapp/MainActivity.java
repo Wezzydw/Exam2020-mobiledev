@@ -1,14 +1,102 @@
 package com.example.exam2020_certificateapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 
 public class MainActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore mDb;
+    private String TAG = "XYZ";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDb = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
+
+
     }
+
+
+    public void btnRouteRegisterActivity(View view) {
+        Log.d(TAG, "ny aktivitet");
+        startActivity(new Intent(this, RegisterActivity.class));
+    }
+
+    public void login(View view) {
+
+        final EditText getEmail = findViewById(R.id.loginEtUsername);
+        EditText getPassword = findViewById(R.id.loginEtPassword);
+
+        final String email = getEmail.getText().toString();
+        final String password = getPassword.getText().toString();
+
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            getUser(user.getUid());
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            getEmail.setTextColor(Color.RED);
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Snackbar authError = Snackbar.make(findViewById(R.id.MainActivity),
+                                    "Wrong email/username or password.",
+                                    Snackbar.LENGTH_SHORT);
+                            authError.show();
+                        }
+
+                    }
+                    // ...
+                });
+    }
+
+    private Object getUser(String uid) {
+        DocumentReference docRef = mDb.collection("users").document(uid);
+        docRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+        return null;
+    }
+
+
 }
