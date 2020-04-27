@@ -59,25 +59,14 @@ public class RegisterActivity extends AppCompatActivity {
                 String password = registerTextPassword.getText().toString();
                 String userName = registerTextUserName.getText().toString();
                 String name = registerTextName.getText().toString();
-                createAccount(email, password, name, userName, confirmPassword);
+                validatingUser(email, password, name, userName, confirmPassword);
             }
         });
     }
 
     private void createAccount(final String email, String password, final String name, final String userName, String confirmPassword) {
         Log.d(TAG, "createAccount:" + email);
-        if (!validateUser(email, name, userName)) {
-            return;
-        }
-        if (userAlreadyExist(userName)) {
-            Log.d(TAG, "that username already exists");
-            return;
-        }
 
-        if (!passwordCheck(password, confirmPassword)) {
-            Log.d(TAG, "passwords does not match each other");
-            return;
-        }
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -126,11 +115,19 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean userAlreadyExist(final String userName) {
+    private void validatingUser(final String email, final String password, final String name, final String userName, final String confirmPassword) {
+        if (!validateUser(email, name, userName)) {
+            return;
+        }
+        if (!passwordCheck(password, confirmPassword)) {
+            Log.d(TAG, "passwords does not match each other");
+            return;
+        }
         final List<String> allUserNames = new ArrayList<String>();
         mDb.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                boolean exists = false;
                 for(QueryDocumentSnapshot docSnap : queryDocumentSnapshots) {
                     User tempUser = docSnap.toObject(User.class);
                     String tempUserName = tempUser.getmUserName();
@@ -140,11 +137,15 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.d(TAG, "username exist " + un);
                     if (userName.equals(un)) {
                         Log.d(TAG, "found username match");
+                        exists = true;
                     }
+                }
+                if(!exists) {
+                    createAccount(email, password, name, userName, confirmPassword);
                 }
             }
         });
-        return true;
+
     }
 
     private boolean passwordCheck(String password, String confirmPassword) {
