@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 
 
+import com.example.exam2020_certificateapp.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
@@ -20,6 +21,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.security.cert.Certificate;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private Object getUser(String uid) {
+    private void getUser(String uid) {
         DocumentReference docRef = mDb.collection("users").document(uid);
         docRef.get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -89,13 +92,23 @@ public class MainActivity extends AppCompatActivity {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
+                                User tempUser = document.toObject(User.class);
+                                redirectUser(tempUser);
+
                             }
                         } else {
                             Log.w(TAG, "Error getting documents.", task.getException());
                         }
                     }
                 });
-        return null;
+
+    }
+
+    private void redirectUser(User user){
+        Log.d(TAG, "redirected??");
+        Intent intent = new Intent(this, RegisterActivity.class);
+        intent.putExtra("user",user);
+        startActivity(intent);
     }
 
 
