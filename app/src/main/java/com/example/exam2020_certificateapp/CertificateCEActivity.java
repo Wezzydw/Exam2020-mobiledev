@@ -49,11 +49,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mCert = (Object) getIntent().getSerializableExtra("usersomethinghere");
         mTextCertName = findViewById(R.id.cceETCertName);
 
-
-
-
-
-
+        
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
 
         Button mBtnTakePicture = findViewById(R.id.cceBtnTakePic);
