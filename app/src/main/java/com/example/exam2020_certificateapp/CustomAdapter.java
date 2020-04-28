@@ -1,6 +1,7 @@
 package com.example.exam2020_certificateapp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,18 +11,22 @@ import android.widget.TextView;
 
 import com.example.exam2020_certificateapp.model.Certificate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CustomAdapter extends BaseAdapter {
     LayoutInflater inflter;
-    Certificate[] certificates;
+    List<Certificate> certificates;
 
-    public CustomAdapter(Context applicationContext, Certificate[] certificates) {
+    public CustomAdapter(Context applicationContext, ArrayList<Certificate> certificates) {
         this.certificates = certificates;
         inflter = (LayoutInflater.from(applicationContext));
+        Log.d("XYZ", "customAdapter" + certificates.size());
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return certificates.size();
     }
 
     @Override
@@ -37,14 +42,15 @@ public class CustomAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
+        Log.d("XYZ", "customAdapter" + position + certificates.get(position).getmName());
         view = inflter.inflate(R.layout.certificate_list_view, null);
         ImageView certImage = (ImageView) view.findViewById(R.id.imageCertificate);
         TextView certExpirationDate = (TextView) view.findViewById(R.id.textExpirationDate);
         TextView certName = (TextView) view.findViewById(R.id.textName);
 
-        // certImage.setImageBitmap();
-        certExpirationDate.setText(certificates[position].getmExpirationDate().toString());
-        certName.setText(certificates[position].getmName());
+        certImage.setImageBitmap(certificates.get(position).getmBitmap());
+        certExpirationDate.setText(certificates.get(position).getmExpirationDate().toString());
+        certName.setText(certificates.get(position).getmName());
         return view;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.exam2020_certificateapp.model;
 
+import android.graphics.Bitmap;
 import android.media.Image;
 
 import java.io.Serializable;
@@ -8,6 +9,7 @@ import java.util.Date;
 public class Certificate implements Serializable {
     private Date mExpirationDate;
     private Image mCertificatePicture;
+    private Bitmap mBitmap;
     private String mName;
 
     public Certificate() {
@@ -38,9 +40,17 @@ public class Certificate implements Serializable {
         this.mName = mName;
     }
 
-    public Certificate(Date mExpirationDate, Image mCertificatePicture, String mName) {
+    public Bitmap getmBitmap() {
+        return mBitmap;
+    }
+
+    public void setmBitmap(Bitmap mBitmap) {
+        this.mBitmap = mBitmap;
+    }
+
+    public Certificate(Date mExpirationDate, Bitmap mImageUrl, String mName) {
         this.mExpirationDate = mExpirationDate;
-        this.mCertificatePicture = mCertificatePicture;
+        this.mBitmap = mImageUrl;
         this.mName = mName;
     }
 }
