@@ -164,7 +164,6 @@ public class UserSettingsActivity extends AppCompatActivity {
                     mImageViewProfilePicture.setImageBitmap(bitmap);
             }
     }
-
     void returnToActivity() {
         promptForSaveSettings();
         //Save all data changes to firebase
