@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -15,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,8 +39,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -59,9 +65,11 @@ public class UserSettingsActivity extends AppCompatActivity {
     EditText mEditTextEmail;
     String TAG = "xyz";
     Object mUser;
+    String mCurrentPhotoPath = "";
 
     int MY_PERMISSIONS_REQUEST_CAMERA;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
+    int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
     String mName = "";
     private FirebaseFirestore mDb;
     FirebaseStorage storage;
@@ -136,9 +144,27 @@ public class UserSettingsActivity extends AppCompatActivity {
             //Ask permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
         } else {
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            }
+
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Error saving image", Toast.LENGTH_LONG);
+                }
+
+                if(photoFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.fileprovider", photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }
+
             }
         }
     }
@@ -157,15 +183,23 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             //Takes IMAGE from camera
             //Uri uri = data.getData();
+            Uri uri = Uri.fromFile(new File(mCurrentPhotoPath));
 
-            Bundle extras = data.getExtras();
+            try {
+                InputStream imageStream = getContentResolver().openInputStream(uri);
+                Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+                mImageViewProfilePicture.setImageBitmap(bitmap);
+                //addPictureToGallery();
+                uploadImageToFirebase(uri);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            /*Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] test = stream.toByteArray();
@@ -185,7 +219,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                 }
             });
             mImageViewProfilePicture.setImageBitmap(imageBitmap);
-            //uploadImageToFirebase(uri);
+            //uploadImageToFirebase(uri);*/
 
         } else if (requestCode == REQUEST_IMAGE_UPLOAD && resultCode == RESULT_OK) {
             //takes Image from storage/SD
@@ -212,7 +246,7 @@ public class UserSettingsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 progressDialog.dismiss();
-                Toast.makeText(UserSettingsActivity.this, "Image has been uploaded succesfully", Toast.LENGTH_LONG).show();
+                Toast.makeText(UserSettingsActivity.this, "Image has been uploaded succesfully ", Toast.LENGTH_LONG).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -228,7 +262,7 @@ public class UserSettingsActivity extends AppCompatActivity {
             @Override
             public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
                 double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                progressDialog.setMessage("Uploaded" + (int) progress + "%");
+                progressDialog.setMessage("Uploaded" + (int) progress + " %");
             }
         });
     }
@@ -310,7 +344,6 @@ public class UserSettingsActivity extends AppCompatActivity {
                     saveSettings();
                     finish();
                     dialog.dismiss();
-
                 }
             });
             builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
@@ -325,6 +358,25 @@ public class UserSettingsActivity extends AppCompatActivity {
         } else {
             finish();
         }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyymmdd_HHmmss").format(new Date());
+        String imageFileName = "Certificate_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        mCurrentPhotoPath = image.getAbsolutePath();
+
+        return image;
+    }
+
+    private void addPictureToGallery() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri uri = Uri.fromFile(f);
+        mediaScanIntent.setData(uri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
 }
