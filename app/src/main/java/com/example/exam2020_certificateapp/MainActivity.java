@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         mDb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-
+        Intent intent = new Intent(this, CertificateCEActivity.class);
+        startActivity(intent);
 
     }
 
