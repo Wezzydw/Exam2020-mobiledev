@@ -91,8 +91,6 @@ public class PhotoHelper {
     public void openCamera() {
         if(checkPermissions())
         {
-
-
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(mPackageManager) != null) {
                 File photoFile = null;
