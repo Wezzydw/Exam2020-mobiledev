@@ -1,9 +1,12 @@
 package com.example.exam2020_certificateapp;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -13,12 +16,18 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CertificateCEActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -26,12 +35,13 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_UPLOAD = 2;
     ImageView mImageView;
-
+    private FirebaseFirestore mDb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_c_e);
         mImageView = findViewById(R.id.cceImageView);
+        mDb = FirebaseFirestore.getInstance();
 
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
 
@@ -52,7 +62,13 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                                                }
                                            }
         );
-
+        Button mBtnSave = findViewById(R.id.cceBtnSave);
+        mBtnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                save();
+            }
+        });
 
         Button btnPickdate = (Button) findViewById(R.id.cceBtnDatePicker);
         btnPickdate.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +78,51 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 datePicker.show(getSupportFragmentManager(), "date picker");
             }
         });
+    }
+
+    private void save() {
+        Map<String, Object> certificate = new HashMap<>();
+        certificate.put("name", "certificate.name");
+        certificate.put("expDate", "certificate.expDate");
+
+
+        mDb.collection("certificates").document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                succesSaving.show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
+                errorSavingChanges.show();
+            }
+        });
+    }
+
+    void promptForSaveSettings() {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Savesettings");
+            builder.setMessage("Save changes?");
+            builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    save();
+                    finish();
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
     }
 
     @Override
@@ -90,4 +151,11 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             mImageView.setImageBitmap(bitmap);
         }
     }
+    @Override
+    public void onBackPressed() {
+        promptForSaveSettings();
+    }
+
+
+
 }
