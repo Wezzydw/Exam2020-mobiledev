@@ -11,7 +11,7 @@ public class User implements Serializable {
     private String mName;
     private String mPhone;
     private Image mImage;
-    private String[] mCertificateList;
+    private Certificate[] mCertificateList;
 
     public User() {
 
@@ -57,11 +57,11 @@ public class User implements Serializable {
         return mUserName;
     }
 
-    public String[] getmCertificateList() {
+    public Certificate[] getmCertificateList() {
         return mCertificateList;
     }
 
-    public void setmCertificateList(String[] mCertificateList) {
+    public void setmCertificateList(Certificate[] mCertificateList) {
         this.mCertificateList = mCertificateList;
     }
 

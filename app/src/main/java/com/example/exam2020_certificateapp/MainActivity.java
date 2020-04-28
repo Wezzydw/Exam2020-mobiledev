@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void redirectUser(User user){
         Log.d(TAG, "redirected??");
-        Intent intent = new Intent(this, RegisterActivity.class);
+        Intent intent = new Intent(this, CertificateListActivity.class);
         intent.putExtra("user",user);
         startActivity(intent);
     }
