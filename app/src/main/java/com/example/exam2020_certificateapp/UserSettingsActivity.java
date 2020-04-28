@@ -63,7 +63,6 @@ public class UserSettingsActivity extends AppCompatActivity {
     EditText mEditTextPassword;
     EditText mEditTextPhone;
     EditText mEditTextEmail;
-    String TAG = "xyz";
     Object mUser;
     String mCurrentPhotoPath = "";
 
