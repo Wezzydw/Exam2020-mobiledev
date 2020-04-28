@@ -36,12 +36,23 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     static final int REQUEST_IMAGE_UPLOAD = 2;
     ImageView mImageView;
     private FirebaseFirestore mDb;
+    TextView textView;
+    TextView mTextCertName;
+    Object mCert;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_c_e);
         mImageView = findViewById(R.id.cceImageView);
         mDb = FirebaseFirestore.getInstance();
+        textView = (TextView) findViewById(R.id.cceTWDate);
+        mCert = (Object) getIntent().getSerializableExtra("usersomethinghere");
+        mTextCertName = findViewById(R.id.cceETCertName);
+
+
+
+
+
 
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
 
@@ -78,14 +89,24 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 datePicker.show(getSupportFragmentManager(), "date picker");
             }
         });
+
+
+        if(mCert != null)
+        {
+            initializeDisplayOfData();
+            mBtnSave.setText("Save Changes");
+        }
+        else {
+            mBtnSave.setText("Create new Certificate");
+        }
+
+
     }
 
     private void save() {
         Map<String, Object> certificate = new HashMap<>();
-        certificate.put("name", "certificate.name");
+        certificate.put("name", mTextCertName.getText());
         certificate.put("expDate", "certificate.expDate");
-
-
         mDb.collection("certificates").document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -102,7 +123,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     }
 
     void promptForSaveSettings() {
-
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Savesettings");
             builder.setMessage("Save changes?");
@@ -125,6 +145,19 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             alert.show();
     }
 
+    void initializeDisplayOfData(){
+        Calendar c = Calendar.getInstance();
+        //use real data here
+        c.set(Calendar.YEAR, 2021);
+        c.set(Calendar.MONTH, 4);
+        c.set(Calendar.DAY_OF_MONTH, 28);
+        String expirationDate = DateFormat.getDateInstance().format(c.getTime());
+
+        textView.setText("Expiration Date: " + expirationDate);
+        mTextCertName.setText("placeholder data name hjere");
+
+    }
+
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Calendar c = Calendar.getInstance();
@@ -133,7 +166,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String expirationDate = DateFormat.getDateInstance().format(c.getTime());
 
-        TextView textView = (TextView) findViewById(R.id.cceTWDate);
+
         textView.setText("Expiration Date: " + expirationDate);
     }
 
@@ -155,7 +188,4 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     public void onBackPressed() {
         promptForSaveSettings();
     }
-
-
-
 }

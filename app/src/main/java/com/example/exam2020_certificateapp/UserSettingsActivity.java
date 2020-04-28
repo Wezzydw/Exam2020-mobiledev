@@ -180,11 +180,11 @@ public class UserSettingsActivity extends AppCompatActivity {
     void saveSettings() {
         //save settings
         Map<String, Object> user = new HashMap<>();
-        user.put("name", "mUser.name");
-        user.put("username", "mUser.username");
-        user.put("password", "mUser.password");
-        user.put("email", "mUser.email");
-        user.put("phone", "phone");
+        user.put("name", mEditTextName.getText());
+        user.put("username", mEditTextUsername.getText());
+        user.put("password", mEditTextPassword.getText());
+        user.put("email", mEditTextEmail.getText());
+        user.put("phone", mEditTextPhone.getText());
 
 
         mDb.collection("users").document().set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
