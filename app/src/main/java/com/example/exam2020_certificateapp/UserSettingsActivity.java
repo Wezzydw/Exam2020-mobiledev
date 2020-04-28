@@ -309,11 +309,11 @@ public class UserSettingsActivity extends AppCompatActivity {
         Map<String, Object> user = new HashMap<>();
         user.put("uid", mUser.getmUId());
 
-        user.put("name", "mUser.name");
-        user.put("username", "mUser.username");
-        user.put("password", "mUser.password");
-        user.put("email", "mUser.email");
-        user.put("phone", "phone");
+        user.put("name", mEditTextName.getText().toString());
+        user.put("username", mEditTextUsername.getText().toString());
+        user.put("password", mEditTextPassword.getText().toString());
+        user.put("email", mEditTextEmail.getText().toString());
+        user.put("phone", mEditTextPhone.getText().toString());
 
 
         mDb.collection("users").document().set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
