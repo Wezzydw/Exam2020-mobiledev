@@ -102,7 +102,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
 
     private void save() {
         Map<String, Object> certificate = new HashMap<>();
-        certificate.put("name", mTextCertName.getText());
+        certificate.put("name", mTextCertName.getText().toString());
         certificate.put("expDate", "certificate.expDate");
         mDb.collection("certificates").document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
