@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/RegisterActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -11,129 +12,16 @@
         android:layout_height="wrap_content"
         app:srcCompat="@mipmap/ic_launcher" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Name: " />
-
-        <EditText
-            android:id="@+id/editName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Email: " />
-
-        <EditText
-            android:id="@+id/editEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Email" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Username: " />
-
-        <EditText
-            android:id="@+id/editUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Username" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Password: " />
-
-        <EditText
-            android:id="@+id/editPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPassword" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textConfirmPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Confirm password: " />
-
-        <EditText
-            android:id="@+id/editConfirmPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPassword" />
-
-    </LinearLayout>
-
     <GridLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:rowCount="5"
         android:layout_margin="2dp"
-        >
+        android:columnCount="2"
+        android:orientation="vertical"
+        android:rowCount="5">
 
         <TextView
-            android:id="@+id/txtName"
+            android:id="@+id/registerTextName"
             android:layout_row="0"
             android:layout_column="0"
             android:layout_columnWeight="1"
@@ -143,16 +31,19 @@
             android:text="Name: " />
 
         <EditText
-            android:id="@+id/edName"
+            android:id="@+id/registerEditName"
             android:layout_row="0"
             android:layout_column="1"
             android:layout_columnWeight="1"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Name" />
+            android:hint="Name"
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
+
         <TextView
-            android:id="@+id/txtEmail"
+            android:id="@+id/registerTextEmail"
             android:layout_row="1"
             android:layout_column="0"
             android:layout_columnWeight="1"
@@ -162,35 +53,41 @@
             android:text="Email: " />
 
         <EditText
-            android:id="@+id/edEmail"
+            android:id="@+id/registerEditEmail"
             android:layout_row="1"
             android:layout_column="1"
             android:layout_columnWeight="1"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Email" />
+            android:hint="Email"
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
+
         <TextView
-            android:id="@+id/txtUsername"
+            android:id="@+id/registerTextUsername"
             android:layout_row="2"
             android:layout_column="0"
             android:layout_columnWeight="1"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Username: " />
+            android:text="Username: "/>
 
         <EditText
-            android:id="@+id/edUsername"
+            android:id="@+id/registerEditUsername"
             android:layout_row="2"
             android:layout_column="1"
             android:layout_columnWeight="1"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Username" />
+            android:hint="Username"
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
+
         <TextView
-            android:id="@+id/txtPassword"
+            android:id="@+id/registerTextPassword"
             android:layout_row="3"
             android:layout_column="0"
             android:layout_columnWeight="1"
@@ -200,7 +97,7 @@
             android:text="Password: " />
 
         <EditText
-            android:id="@+id/edPassword"
+            android:id="@+id/registerEditPassword"
             android:layout_row="3"
             android:layout_column="1"
             android:layout_columnWeight="1"
@@ -208,9 +105,13 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:ems="10"
-            android:inputType="textPassword" />
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
+
         <TextView
-            android:id="@+id/txtConfirmPassword"
+            android:id="@+id/registerTextConfirmPassword"
             android:layout_row="4"
             android:layout_column="0"
             android:layout_columnWeight="1"
@@ -220,7 +121,7 @@
             android:text="Confirm Password: " />
 
         <EditText
-            android:id="@+id/edConfirmPassword"
+            android:id="@+id/registerEditConfirmPassword"
             android:layout_row="4"
             android:layout_column="1"
             android:layout_columnWeight="1"
@@ -228,8 +129,17 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:ems="10"
-            android:inputType="textPassword" />
+            android:hint="Enter your password again"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:maxWidth="50dp"/>
 
     </GridLayout>
+
+    <Button
+        android:id="@+id/registerBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="sign up" />
 
 </LinearLayout>
