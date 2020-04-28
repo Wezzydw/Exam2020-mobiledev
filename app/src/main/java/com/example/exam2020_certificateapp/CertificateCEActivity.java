@@ -37,7 +37,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     static final int REQUEST_IMAGE_UPLOAD = 2;
     ImageView mImageView;
     private FirebaseFirestore mDb;
-    TextView textView;
+    TextView dateText;
     TextView mTextCertName;
     Certificate mCert;
     @Override
@@ -46,7 +46,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         setContentView(R.layout.activity_certificate_c_e);
         mImageView = findViewById(R.id.cceImageView);
         mDb = FirebaseFirestore.getInstance();
-        textView = (TextView) findViewById(R.id.cceTWDate);
+        dateText = (TextView) findViewById(R.id.cceTWDate);
         mCert = (Certificate) getIntent().getSerializableExtra("usersomethinghere");
         mTextCertName = findViewById(R.id.cceETCertName);
 
@@ -150,8 +150,9 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         c.set(Calendar.DAY_OF_MONTH, 28);
         String expirationDate = DateFormat.getDateInstance().format(c.getTime());
 
-        textView.setText("Expiration Date: " + expirationDate);
-        mTextCertName.setText("placeholder data name hjere");
+        //ved ikke lige helt hvad der skal gøres med expdate
+        dateText.setText("Expiration Date: " + expirationDate);
+        mTextCertName.setText(mCert.getmName());
 
     }
 
@@ -164,7 +165,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         String expirationDate = DateFormat.getDateInstance().format(c.getTime());
 
 
-        textView.setText("Expiration Date: " + expirationDate);
+        dateText.setText("Expiration Date: " + expirationDate);
     }
 
     @Override
