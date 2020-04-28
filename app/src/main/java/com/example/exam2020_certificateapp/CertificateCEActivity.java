@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
+import com.example.exam2020_certificateapp.model.Certificate;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,7 +39,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     private FirebaseFirestore mDb;
     TextView textView;
     TextView mTextCertName;
-    Object mCert;
+    Certificate mCert;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,10 +47,10 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mImageView = findViewById(R.id.cceImageView);
         mDb = FirebaseFirestore.getInstance();
         textView = (TextView) findViewById(R.id.cceTWDate);
-        mCert = (Object) getIntent().getSerializableExtra("usersomethinghere");
+        mCert = (Certificate) getIntent().getSerializableExtra("usersomethinghere");
         mTextCertName = findViewById(R.id.cceETCertName);
 
-        
+
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
 
         Button mBtnTakePicture = findViewById(R.id.cceBtnTakePic);
