@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         final String email = getEmail.getText().toString();
         final String password = getPassword.getText().toString();
 
+        if((email != null && !email.isEmpty()) && password != null && !password.isEmpty()){
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     // ...
-                });
+                });}
     }
 
     private void getUser(String uid) {
