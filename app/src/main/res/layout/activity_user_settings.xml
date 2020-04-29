@@ -27,29 +27,30 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <Button
             android:id="@+id/settingsBtnTakePicture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="10dp"
-            android:clickable="true"
+            android:background="@drawable/cameralogo"
 
-            app:srcCompat="@android:drawable/ic_btn_speak_now" />
+            android:clickable="true"
+            android:src="@drawable/cameralogo" />
 
         <Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <Button
             android:id="@+id/settingsBtnUploadPicture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             android:clickable="true"
-            app:srcCompat="@drawable/common_full_open_on_phone" />
+            android:background="@drawable/file" />
     </LinearLayout>
 
     <EditText

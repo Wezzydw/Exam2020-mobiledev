@@ -10,8 +10,8 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/ic_launcher" />
+        android:layout_height="180dp"
+        android:src="@drawable/logogeneric" />
 
     <GridLayout
         android:orientation="vertical"
@@ -31,7 +31,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Username: " />
+            android:text="E-mail: " />
 
         <EditText
             android:id="@+id/loginEtUsername"
@@ -41,7 +41,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
-            android:text="Username"
+            android:hint="E-mail"
             android:singleLine="true"
             android:maxWidth="50dp"
             />
@@ -77,6 +77,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:text="Login"
+            android:textAllCaps="false"
             android:onClick="login"
             />
 
@@ -89,14 +90,11 @@
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
             android:text="Sign Up"
+            android:textAllCaps="false"
             android:onClick="btnRouteRegisterActivity"
             />
 
     </GridLayout>
 
-    <Button
-        android:id="@+id/goToRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Button" />
+
 </LinearLayout>

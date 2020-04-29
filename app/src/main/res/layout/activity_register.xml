@@ -9,8 +9,8 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/ic_launcher" />
+        android:layout_height="180dp"
+        android:src="@drawable/logogeneric" />
 
     <GridLayout
         android:layout_width="match_parent"
@@ -140,6 +140,8 @@
         android:id="@+id/registerBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="sign up" />
+        android:text="Register"
+        android:textAllCaps="false"
+        />
 
 </LinearLayout>

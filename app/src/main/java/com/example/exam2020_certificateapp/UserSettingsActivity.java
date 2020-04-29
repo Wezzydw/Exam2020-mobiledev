@@ -36,8 +36,8 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_UPLOAD = 2;
-    FloatingActionButton mBtnTakePicture;
-    FloatingActionButton mBtnGetGalleryPicture;
+    Button mBtnTakePicture;
+    Button mBtnGetGalleryPicture;
     Button mBtnDeleteUser;
     ImageView mImageViewProfilePicture;
     ImageButton mBtnGoBack;

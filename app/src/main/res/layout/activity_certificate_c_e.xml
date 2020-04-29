@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:id="@+id/cceETCertName"
-            android:text="Certificate name"
+            android:hint="Certificate name"
             android:textAlignment="center"
             android:textSize="25sp"
 
@@ -37,39 +37,49 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/cceBtnDatePicker"
-        android:text="Pick expiration date"
+        android:text="Pick Expiration Date"
+        android:textAllCaps="false"
         android:paddingLeft="50dp"
         android:paddingRight="50dp"
         android:layout_gravity="center"
         />
 
-    <GridLayout
-        android:orientation="vertical"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:rowCount="1"
-        android:layout_margin="2dp"
-
+        android:layout_marginHorizontal="140dp"
         >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
         <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/cceBtnPicFromLib"
-        android:text="Pic from phone"
-        android:layout_columnWeight="50"
-        />
+            android:id="@+id/cceBtnPicFromLib"
+            android:layout_gravity="start"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/file"
+            />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/cceBtnTakePic"
-        android:text="Take a picture"
-        android:layout_columnWeight="50"
-        />
+        </LinearLayout>
 
-    </GridLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/cceBtnTakePic"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/cameralogo"
+                 />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/cceImageView"
@@ -83,7 +93,7 @@
         android:layout_gravity="center"
         android:id="@+id/cceBtnSave"
         android:text="Submit"
-
+        android:textAllCaps="false"
         />
 
 
