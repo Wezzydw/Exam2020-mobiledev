@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -158,7 +159,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     void deleteUserPrompt() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("DeleteUser");
-        builder.setMessage("ARE YUO SURE YOY WAN TTO DELETE YOUR ACOUNT????!!?");
+        builder.setMessage("ARE YOU SURE YOU WANT TO DELETE YOUR ACCOUNT????!!?");
         builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -178,7 +179,23 @@ public class UserSettingsActivity extends AppCompatActivity {
     }
 
     void fireBaseDeleteAccount() {
-        mDb.collection("user").document("mUserUID").delete();
+        Log.d("XYZ", mUser.getmUId());
+        mDb.document("users/" + mUser.getmUId()).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("XYZ", "DocumentSnapshot successfully deleted!");
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        //destroy or make it so you can't get back in with the back button before you log in again.
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("XYZ", "Error deleting document", e);
+                    }
+                });;
         //Delete certificates with functions
     }
 
@@ -195,8 +212,7 @@ public class UserSettingsActivity extends AppCompatActivity {
         user.put("phone", mEditTextPhone.getText().toString());
 
 
-
-        mDb.collection("users").document().set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+        mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
