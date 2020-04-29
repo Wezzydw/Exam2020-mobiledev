@@ -75,11 +75,11 @@ public class PhotoHelper {
         return true;
     }
 
-    public Bitmap uploadToFirebase(Uri uri) {
+
+    public Bitmap getBitmap(Uri uri) {
         try {
             InputStream imageStream = mActivity.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-            uploadImageToFirebase(uri);
             return bitmap;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -134,11 +134,11 @@ public class PhotoHelper {
     }
 
 
-    void uploadImageToFirebase(Uri filepath) {
+    public void uploadImageToFirebase(Uri filepath, UUID uuid) {
         final ProgressDialog progressDialog = new ProgressDialog(mCont);
         progressDialog.setTitle("Uploading");
         progressDialog.show();
-        StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+        StorageReference ref = storageReference.child("images/" + uuid.toString());
         ref.putFile(filepath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
