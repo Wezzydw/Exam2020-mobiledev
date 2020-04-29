@@ -29,11 +29,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
+
+import com.example.exam2020_certificateapp.model.User;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -64,7 +66,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     EditText mEditTextPassword;
     EditText mEditTextPhone;
     EditText mEditTextEmail;
-    Object mUser;
+    User mUser;
     String mCurrentPhotoPath = "";
 
     int MY_PERMISSIONS_REQUEST_CAMERA;
@@ -125,21 +127,24 @@ public class UserSettingsActivity extends AppCompatActivity {
         mBtnGetGalleryPicture.setOnClickListener(buttons);
         mBtnDeleteUser.setOnClickListener(buttons);
 
-        Object mUser = (Object) getIntent().getSerializableExtra("usersomethinghere");
+        mUser = (User) getIntent().getSerializableExtra("usersomethinghere");
 
         if(mUser != null)
         {
             initializeDisplayOfData();
         }
+        else {
+            finish();
+        }
 
     }
 
     void initializeDisplayOfData(){
-        mEditTextEmail.setText("");
-        mEditTextName.setText("");
+        mEditTextEmail.setText(mUser.getmEmail());
+        mEditTextName.setText(mUser.getmName());
         mEditTextPassword.setText("");
-        mEditTextPhone.setText("");
-        mEditTextUsername.setText("NoUserNameYet");
+        mEditTextPhone.setText(mUser.getmPhone());
+        mEditTextUsername.setText(mUser.getmUserName());
     }
 
 
@@ -202,11 +207,13 @@ public class UserSettingsActivity extends AppCompatActivity {
     void saveSettings() {
         //save settings
         Map<String, Object> user = new HashMap<>();
-        user.put("name", "mUser.name");
-        user.put("username", "mUser.username");
-        user.put("password", "mUser.password");
-        user.put("email", "mUser.email");
-        user.put("phone", "phone");
+        user.put("uid", mUser.getmUId());
+
+        user.put("name", mEditTextName.getText().toString());
+        user.put("username", mEditTextUsername.getText().toString());
+        user.put("password", mEditTextPassword.getText().toString());
+        user.put("email", mEditTextEmail.getText().toString());
+        user.put("phone", mEditTextPhone.getText().toString());
 
 
         mDb.collection("users").document().set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
