@@ -30,9 +30,6 @@ public class User implements Serializable {
         mImage = image;
     }
 
-    public void setPhone(String phone) {
-        mPhone = phone;
-    }
 
     public String getmUId() {
         return mUId;
@@ -76,5 +73,17 @@ public class User implements Serializable {
 
     public void setmUserName(String mUserName) {
         this.mUserName = mUserName;
+    }
+
+    public void setmUId(String mUId) {
+        this.mUId = mUId;
+    }
+
+    public void setmPhone(String mPhone) {
+        this.mPhone = mPhone;
+    }
+
+    public void setmImage(byte[] mImage) {
+        this.mImage = mImage;
     }
 }

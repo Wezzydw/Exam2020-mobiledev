@@ -202,15 +202,23 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     void saveSettings() {
         //save settings
-        Map<String, Object> user = new HashMap<>();
+//        Map<String, Object> user = new HashMap<>();
+//
+//        user.put("uid", mUser.getmUId().toString());
+//        user.put("name", mEditTextName.getText().toString());
+//        user.put("username", mEditTextUsername.getText().toString());
+//        user.put("password", mEditTextPassword.getText().toString());
+//        user.put("email", mEditTextEmail.getText().toString());
+//        user.put("phone", mEditTextPhone.getText().toString());
 
-        user.put("uid", mUser.getmUId().toString());
-        user.put("name", mEditTextName.getText().toString());
-        user.put("username", mEditTextUsername.getText().toString());
-        user.put("password", mEditTextPassword.getText().toString());
-        user.put("email", mEditTextEmail.getText().toString());
-        user.put("phone", mEditTextPhone.getText().toString());
-
+        User user = new User();
+        user.setmEmail(mEditTextEmail.getText().toString());
+        user.setmName(mEditTextName.getText().toString());
+        user.setmUserName(mEditTextUsername.getText().toString());
+        user.setmCertificateList(mUser.getmCertificateList());
+        user.setmPhone(mEditTextPhone.getText().toString());
+        user.setImage(mUser.getmImage());
+        user.setmUId(mUser.getmUId());
 
         mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
