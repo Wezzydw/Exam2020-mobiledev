@@ -42,6 +42,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     TextView mTextCertName;
     Certificate mCert;
     Bitmap mBitmap;
+    Uri mCurrentImageUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +104,11 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     }
 
     private void save() {
+
+        //
+        //mPhotoHelper.uploadToFirebase(mCurrentImageUri);
+        //
+
         Certificate certificate;
         if(mCert != null) {
             certificate = mCert;
@@ -204,8 +210,9 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             uri = data.getData();
         }
         if(uri != null) {
-            Bitmap bitmap = mPhotoHelper.uploadToFirebase(uri);
-            mImageView.setImageBitmap(bitmap);
+            mCurrentImageUri = uri;
+            mBitmap = mPhotoHelper.getBitmap(uri);
+            mImageView.setImageBitmap(mBitmap);
         }
     }
     @Override

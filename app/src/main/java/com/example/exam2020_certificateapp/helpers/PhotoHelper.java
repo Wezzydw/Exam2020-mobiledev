@@ -75,11 +75,14 @@ public class PhotoHelper {
         return true;
     }
 
-    public Bitmap uploadToFirebase(Uri uri) {
+    public void uploadToFirebase(Uri uri) {
+        uploadImageToFirebase(uri);
+    }
+
+    public Bitmap getBitmap(Uri uri) {
         try {
             InputStream imageStream = mActivity.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-            uploadImageToFirebase(uri);
             return bitmap;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

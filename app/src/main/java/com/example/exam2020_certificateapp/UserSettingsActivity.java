@@ -144,7 +144,7 @@ public class UserSettingsActivity extends AppCompatActivity {
             uri = data.getData();
         }
             if(uri != null) {
-                    Bitmap bitmap = mPhotoHelper.uploadToFirebase(uri);
+                    Bitmap bitmap = mPhotoHelper.getBitmap(uri);
                     mImageViewProfilePicture.setImageBitmap(bitmap);
             }
     }
