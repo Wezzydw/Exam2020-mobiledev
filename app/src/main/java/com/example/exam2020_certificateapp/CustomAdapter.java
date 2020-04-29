@@ -1,6 +1,8 @@
 package com.example.exam2020_certificateapp;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +50,9 @@ public class CustomAdapter extends BaseAdapter {
         TextView certExpirationDate = (TextView) view.findViewById(R.id.textExpirationDate);
         TextView certName = (TextView) view.findViewById(R.id.textName);
 
-        certImage.setImageBitmap(certificates.get(position).getmBitmap());
+        byte[] byteArray = certificates.get(position).getmBitmap();
+        Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        certImage.setImageBitmap(image);
         certExpirationDate.setText(certificates.get(position).getmExpirationDate().toString());
         certName.setText(certificates.get(position).getmName());
         return view;

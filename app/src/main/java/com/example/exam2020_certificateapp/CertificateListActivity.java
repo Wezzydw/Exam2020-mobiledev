@@ -5,11 +5,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +29,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StreamDownloadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +59,22 @@ public class CertificateListActivity extends AppCompatActivity {
         Log.d("XYZ", mAuth.getCurrentUser().getUid());
         setUser();
         lv = findViewById(R.id.listCertificates);
+        ImageView profilePic = findViewById(R.id.imageUser);
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                redirectToSettings();
+            }
+        });
+        Button buttonAdd = findViewById(R.id.buttonAdd);
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), RegisterActivity.class); // detail view instead of register
+
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -84,7 +105,13 @@ public class CertificateListActivity extends AppCompatActivity {
 
 
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                                    tempCert.setmBitmap(bitmap);
+                                    // make bytearray from the inpputstream
+
+                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                    byte[] byteArray = stream.toByteArray();
+
+                                    tempCert.setmBitmap(byteArray);
                                     certificates.add(tempCert);
                                     Log.d("XYZ", tempCert.getmName() + tempCert.getmExpirationDate());
                                     inputStream.close();
@@ -93,7 +120,7 @@ public class CertificateListActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
                                     Log.d("123","download complete");
-                                    Log.d("XYZ","size: " + certificates.get(0).getmBitmap().getHeight());
+                                    Log.d("XYZ","size: " + certificates.get(0).getmBitmap().length);
                                     setupListView();
 
 
@@ -116,8 +143,34 @@ public class CertificateListActivity extends AppCompatActivity {
         if (certificates != null|| certificates.isEmpty()) {
             CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), certificates);
             lv.setAdapter(customAdapter);
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(view.getContext(), RegisterActivity.class); // detail view instead of register
+                    Certificate cert = certificates.get(position);
+                    Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
+                    intent.putExtra("cert", cert);
+
+//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                    cert.getmBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
+//                    byte[] byteArray = stream.toByteArray(); // we do this cause it might be able to handle larger files than 1mb
+//                    intent.putExtra("image", byteArray);
+//                    intent.putExtra("position", position);
+//                    Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0,
+//                            byteArray.length);
+
+                    startActivity(intent);
+                }
+            });
         }
 
+    }
+
+    private void redirectToSettings() {
+        Log.d("XYZ", "redirected??");
+        Intent intent = new Intent(this, RegisterActivity.class); //settings activity
+        intent.putExtra("user",user);
+        startActivity(intent);
     }
 
 
