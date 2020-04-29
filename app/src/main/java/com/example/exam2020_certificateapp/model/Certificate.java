@@ -6,19 +6,20 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Certificate implements Serializable {
-    private Date mExpirationDate;
+    private String mExpirationDate;
     private byte[] mBitmap;
     private String mName;
+    private String mUId;
 
     public Certificate() {
 
     }
 
-    public Date getmExpirationDate() {
+    public String getmExpirationDate() {
         return mExpirationDate;
     }
 
-    public void setmExpirationDate(Date mExpirationDate) {
+    public void setmExpirationDate(String mExpirationDate) {
         this.mExpirationDate = mExpirationDate;
     }
 
@@ -38,12 +39,21 @@ public class Certificate implements Serializable {
         this.mBitmap = mBitmap;
     }
 
-    public Certificate(Date mExpirationDate,  byte[] mImageUrl, String mName) {
+    public String getmUId() {
+        return mUId;
+    }
+
+    public void setmUId(String mUId) {
+        this.mUId = mUId;
+    }
+
+    public Certificate(String mExpirationDate, byte[] mImageUrl, String mName, String mUId) {
         this.mExpirationDate = mExpirationDate;
         this.mBitmap = mImageUrl;
         this.mName = mName;
+        this.mUId = mUId;
     }
-    public Certificate(Date mExpirationDate, String mName) {
+    public Certificate(String mExpirationDate, String mName) {
         this.mExpirationDate = mExpirationDate;
         this.mName = mName;
     }

@@ -43,7 +43,7 @@ public class CertificateListActivity extends AppCompatActivity {
     private FirebaseFirestore mDb;
     private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
-
+    private ImageView profilePic;
 
     ListView lv;
 
@@ -59,7 +59,7 @@ public class CertificateListActivity extends AppCompatActivity {
         Log.d("XYZ", mAuth.getCurrentUser().getUid());
         setUser();
         lv = findViewById(R.id.listCertificates);
-        ImageView profilePic = findViewById(R.id.imageUser);
+        profilePic = findViewById(R.id.imageUser);
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +70,7 @@ public class CertificateListActivity extends AppCompatActivity {
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), RegisterActivity.class); // detail view instead of register
+                Intent intent = new Intent(v.getContext(), CertificateCEActivity.class); // detail view instead of register
 
                 startActivity(intent);
             }
@@ -81,7 +81,9 @@ public class CertificateListActivity extends AppCompatActivity {
     private void setUser() {
         user = (User) getIntent().getSerializableExtra("user");
         if (user.getmImage() != null) {
-            //set image
+            byte[] byteArray = user.getmImage();
+            Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            profilePic.setImageBitmap(bm);
         }
 
         if (user.getmCertificateList() != null) {
@@ -95,17 +97,12 @@ public class CertificateListActivity extends AppCompatActivity {
                             File localFile = File.createTempFile("images","jpg");
                             StorageReference riversRef = mStorageRef.child("certificates/" + user.getmUId() + "/" + "historyScreen.PNG");
                             Log.d("XYZ",riversRef.getPath());
+                            Log.d("XYZ",tempCert.getmName() + tempCert.getmUId());
                             riversRef.getStream(new StreamDownloadTask.StreamProcessor() {
                                 @Override
                                 public void doInBackground(StreamDownloadTask.TaskSnapshot taskSnapshot, InputStream inputStream) throws IOException {
-                                    long totalBytes = taskSnapshot.getTotalByteCount();
-                                    long bytesDownloaded = 0;
-                                    byte[] buffer = new byte[1024];
-                                    int size;
-
 
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                                    // make bytearray from the inpputstream
 
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -146,7 +143,7 @@ public class CertificateListActivity extends AppCompatActivity {
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(view.getContext(), RegisterActivity.class); // detail view instead of register
+                    Intent intent = new Intent(view.getContext(), CertificateCEActivity.class); // detail view instead of register
                     Certificate cert = certificates.get(position);
                     Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
                     intent.putExtra("cert", cert);
@@ -168,7 +165,7 @@ public class CertificateListActivity extends AppCompatActivity {
 
     private void redirectToSettings() {
         Log.d("XYZ", "redirected??");
-        Intent intent = new Intent(this, RegisterActivity.class); //settings activity
+        Intent intent = new Intent(this, UserSettingsActivity.class); //settings activity
         intent.putExtra("user",user);
         startActivity(intent);
     }

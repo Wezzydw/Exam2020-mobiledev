@@ -9,6 +9,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -40,6 +41,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     TextView dateText;
     TextView mTextCertName;
     Certificate mCert;
+    Bitmap mBitmap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +49,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mImageView = findViewById(R.id.cceImageView);
         mDb = FirebaseFirestore.getInstance();
         dateText = (TextView) findViewById(R.id.cceTWDate);
-        mCert = (Certificate) getIntent().getSerializableExtra("usersomethinghere");
+        mCert = (Certificate) getIntent().getSerializableExtra("cert");
         mTextCertName = findViewById(R.id.cceETCertName);
 
 
@@ -101,22 +103,44 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     }
 
     private void save() {
-        Map<String, Object> certificate = new HashMap<>();
-        certificate.put("name", mTextCertName.getText().toString());
-        certificate.put("expDate", "certificate.expDate");
-        mDb.collection("certificates").document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                succesSaving.show();
+        Certificate certificate;
+        if(mCert != null) {
+            certificate = mCert;
+            mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                    succesSaving.show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
+                    errorSavingChanges.show();
+                }
+            });
+        } else {
+            if(mBitmap!=null){
+                certificate = new Certificate(mTextCertName.getText().toString(), dateText.getText().toString());
+                // certificate.setmBitmap(mBitmap);
+
+                mDb.collection("certificates" + mCert.getmUId()).document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                        succesSaving.show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
+                        errorSavingChanges.show();
+                    }
+                });
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
-                errorSavingChanges.show();
-            }
-        });
+        }
+
+
     }
 
     void promptForSaveSettings() {
@@ -153,7 +177,9 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         //ved ikke lige helt hvad der skal gøres med expdate
         dateText.setText("Expiration Date: " + expirationDate);
         mTextCertName.setText(mCert.getmName());
-
+        byte[] byteArray = mCert.getmBitmap();
+        Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        mImageView.setImageBitmap(image);
     }
 
     @Override

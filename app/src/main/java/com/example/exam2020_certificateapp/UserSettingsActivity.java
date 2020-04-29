@@ -106,7 +106,7 @@ public class UserSettingsActivity extends AppCompatActivity {
         mBtnGetGalleryPicture.setOnClickListener(buttons);
         mBtnDeleteUser.setOnClickListener(buttons);
 
-        mUser = (User) getIntent().getSerializableExtra("usersomethinghere");
+        mUser = (User) getIntent().getSerializableExtra("user");
 
         if(mUser != null)
         {
