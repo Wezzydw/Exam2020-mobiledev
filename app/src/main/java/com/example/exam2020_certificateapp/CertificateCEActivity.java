@@ -30,6 +30,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class CertificateCEActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -106,7 +107,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     private void save() {
 
         //
-        //mPhotoHelper.uploadToFirebase(mCurrentImageUri);
+        //mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
         //
 
         Certificate certificate;
