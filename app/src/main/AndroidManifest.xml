@@ -8,7 +8,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
-
     <application
 
         android:allowBackup="true"
@@ -18,10 +17,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+
         <activity android:name=".CertificateCEActivity"></activity>
-
+        <activity android:name=".CertificateListActivity"></activity>
         <activity android:name=".UserSettingsActivity"></activity>
-
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

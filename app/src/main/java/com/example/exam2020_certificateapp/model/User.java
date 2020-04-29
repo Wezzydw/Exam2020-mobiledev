@@ -3,6 +3,7 @@ package com.example.exam2020_certificateapp.model;
 import android.media.Image;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class User implements Serializable {
     private String mUserName;
@@ -11,7 +12,7 @@ public class User implements Serializable {
     private String mName;
     private String mPhone;
     private Image mImage;
-    private String[] mCertificateList;
+    private List<String> mCertificateList;
 
     public User() {
 
@@ -57,11 +58,11 @@ public class User implements Serializable {
         return mUserName;
     }
 
-    public String[] getmCertificateList() {
+    public List<String> getmCertificateList() {
         return mCertificateList;
     }
 
-    public void setmCertificateList(String[] mCertificateList) {
+    public void setmCertificateList(List<String> mCertificateList) {
         this.mCertificateList = mCertificateList;
     }
 

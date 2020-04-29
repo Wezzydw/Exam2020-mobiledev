@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         final String email = getEmail.getText().toString();
         final String password = getPassword.getText().toString();
 
+        if((email != null && !email.isEmpty()) && password != null && !password.isEmpty()){
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     // ...
-                });
+                });}
     }
 
     private void getUser(String uid) {
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void redirectUser(User user){
         Log.d(TAG, "redirected??");
-        Intent intent = new Intent(this, RegisterActivity.class);
+        Intent intent = new Intent(this, CertificateListActivity.class);
         intent.putExtra("user",user);
         startActivity(intent);
     }
