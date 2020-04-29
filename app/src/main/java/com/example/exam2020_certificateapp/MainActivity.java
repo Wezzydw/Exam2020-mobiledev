@@ -36,11 +36,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(this, UserSettingsActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, UserSettingsActivity.class);
+        //startActivity(intent);
 
         mDb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+
+
+        Intent intent = new Intent(this, CertificateCEActivity.class);
+        startActivity(intent);
 
     }
 

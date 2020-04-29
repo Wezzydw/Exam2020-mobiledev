@@ -3,24 +3,12 @@ package com.example.exam2020_certificateapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
-import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,20 +25,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class UserSettingsActivity extends AppCompatActivity {
 
@@ -116,7 +95,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                         helperOpenGallery();
                         break;
                     case R.id.settingsBtnDeleteUser:
-                        deleteUserPromt();
+                        deleteUserPrompt();
                         break;
                 }
             }
@@ -176,7 +155,7 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     }
 
-    void deleteUserPromt() {
+    void deleteUserPrompt() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("DeleteUser");
         builder.setMessage("ARE YUO SURE YOY WAN TTO DELETE YOUR ACOUNT????!!?");
@@ -207,13 +186,14 @@ public class UserSettingsActivity extends AppCompatActivity {
     void saveSettings() {
         //save settings
         Map<String, Object> user = new HashMap<>();
-        user.put("uid", mUser.getmUId());
 
+        user.put("uid", mUser.getmUId().toString());
         user.put("name", mEditTextName.getText().toString());
         user.put("username", mEditTextUsername.getText().toString());
         user.put("password", mEditTextPassword.getText().toString());
         user.put("email", mEditTextEmail.getText().toString());
         user.put("phone", mEditTextPhone.getText().toString());
+
 
 
         mDb.collection("users").document().set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
