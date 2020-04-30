@@ -3,6 +3,7 @@ package com.example.exam2020_certificateapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore mDb;
     private String TAG = "XYZ";
+    private ProgressDialog dialog;
 
 
     @Override
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         final String email = getEmail.getText().toString();
         final String password = getPassword.getText().toString();
+        progressBar();
 
         if((email != null && !email.isEmpty()) && password != null && !password.isEmpty()){
 
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
+
                             FirebaseUser user = mAuth.getCurrentUser();
                             getUser(user.getUid());
                         } else {
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                             Snackbar authError = Snackbar.make(findViewById(R.id.MainActivity),
                                     "Wrong email/username or password.",
                                     Snackbar.LENGTH_SHORT);
+                            dialog.dismiss();
                             authError.show();
                         }
 
@@ -105,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
+        dialog.dismiss();
     }
 
     private void redirectUser(User user){
@@ -113,6 +118,14 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, CertificateListActivity.class);
         intent.putExtra("user",user);
         startActivity(intent);
+    }
+
+    private void progressBar(){
+        Log.d(TAG,"ProgressBar?");
+        dialog = new ProgressDialog(MainActivity.this);
+        dialog.show();
+        dialog.setContentView(R.layout.progress_dialog);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
     }
 
 
