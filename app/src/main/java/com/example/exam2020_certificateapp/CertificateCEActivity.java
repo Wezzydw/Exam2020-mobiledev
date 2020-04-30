@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
@@ -46,6 +47,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     Certificate mCert;
     Bitmap mBitmap;
     Uri mCurrentImageUri;
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +57,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         dateText = (TextView) findViewById(R.id.cceTWDate);
         mCert = (Certificate) getIntent().getSerializableExtra("cert");
         mTextCertName = findViewById(R.id.cceETCertName);
+        mAuth = FirebaseAuth.getInstance();
 
 
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
@@ -137,6 +140,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 mDb.collection("certificates").document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        // String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/" + UUID.randomUUID();
                         mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
                         Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                         succesSaving.show();
