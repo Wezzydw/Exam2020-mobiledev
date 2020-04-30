@@ -21,8 +21,10 @@ import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
 import com.example.exam2020_certificateapp.model.Certificate;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
@@ -116,6 +118,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
                     Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                     succesSaving.show();
                 }
@@ -128,12 +131,13 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             });
         } else {
             if(mBitmap!=null){
-                certificate = new Certificate(mTextCertName.getText().toString(), dateText.getText().toString());
+                certificate = new Certificate( dateText.getText().toString(), mTextCertName.getText().toString());
                 // certificate.setmBitmap(mBitmap);
 
-                mDb.collection("certificates" + mCert.getmUId()).document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mDb.collection("certificates").document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
                         Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                         succesSaving.show();
                     }

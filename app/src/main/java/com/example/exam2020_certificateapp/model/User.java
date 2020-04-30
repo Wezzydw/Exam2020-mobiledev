@@ -11,7 +11,7 @@ public class User implements Serializable {
     private String mUId;
     private String mName;
     private String mPhone;
-    private byte[] mImage;
+    private String mImage;
     private List<String> mCertificateList;
 
     public User() {
@@ -26,7 +26,7 @@ public class User implements Serializable {
         mImage = null;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(String image) {
         mImage = image;
     }
 
@@ -35,7 +35,7 @@ public class User implements Serializable {
         return mUId;
     }
 
-    public byte[] getmImage() {
+    public String getmImage() {
         return mImage;
     }
 
@@ -83,7 +83,7 @@ public class User implements Serializable {
         this.mPhone = mPhone;
     }
 
-    public void setmImage(byte[] mImage) {
+    public void setmImage(String mImage) {
         this.mImage = mImage;
     }
 }

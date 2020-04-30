@@ -28,9 +28,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class UserSettingsActivity extends AppCompatActivity {
 
@@ -48,6 +50,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     EditText mEditTextEmail;
     User mUser;
     String mCurrentPhotoPath = "";
+    Uri mCurrentImageUri;
 
     int MY_PERMISSIONS_REQUEST_CAMERA;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
@@ -56,6 +59,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     private FirebaseFirestore mDb;
     FirebaseStorage storage;
     StorageReference storageReference;
+    private byte[] byteArray;
 
     private PhotoHelper mPhotoHelper;
 
@@ -145,8 +149,12 @@ public class UserSettingsActivity extends AppCompatActivity {
             uri = data.getData();
         }
             if(uri != null) {
-                    Bitmap bitmap = mPhotoHelper.getBitmap(uri);
-                    mImageViewProfilePicture.setImageBitmap(bitmap);
+                mCurrentImageUri = uri;
+                Bitmap bitmap = mPhotoHelper.getBitmap(uri);
+                mImageViewProfilePicture.setImageBitmap(bitmap);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byteArray = stream.toByteArray();
             }
     }
     void returnToActivity() {
@@ -195,21 +203,12 @@ public class UserSettingsActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.w("XYZ", "Error deleting document", e);
                     }
-                });;
+                });
         //Delete certificates with functions
     }
 
 
     void saveSettings() {
-        //save settings
-//        Map<String, Object> user = new HashMap<>();
-//
-//        user.put("uid", mUser.getmUId().toString());
-//        user.put("name", mEditTextName.getText().toString());
-//        user.put("username", mEditTextUsername.getText().toString());
-//        user.put("password", mEditTextPassword.getText().toString());
-//        user.put("email", mEditTextEmail.getText().toString());
-//        user.put("phone", mEditTextPhone.getText().toString());
 
         User user = new User();
         user.setmEmail(mEditTextEmail.getText().toString());
@@ -223,6 +222,8 @@ public class UserSettingsActivity extends AppCompatActivity {
         mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                // photo helper breaks the app, I think it is because the toast you put in the activity and it switches activity too fast 
+                //mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
                 Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                 succesSaving.show();
             }
@@ -233,6 +234,10 @@ public class UserSettingsActivity extends AppCompatActivity {
                 errorSavingChanges.show();
             }
         });
+        Intent result = new Intent();
+        result.putExtra("updatedUser", user);
+        result.putExtra("profilePic", byteArray);
+        setResult(RESULT_OK, result);
     }
 
     @Override

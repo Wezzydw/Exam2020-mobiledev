@@ -134,7 +134,7 @@ public class PhotoHelper {
     }
 
 
-    public void uploadImageToFirebase(Uri filepath, UUID uuid) {
+    public void uploadImageToFirebase(Uri filepath, UUID uuid) { //String path instead of UUID so we can choose where the image gets saved
         final ProgressDialog progressDialog = new ProgressDialog(mCont);
         progressDialog.setTitle("Uploading");
         progressDialog.show();

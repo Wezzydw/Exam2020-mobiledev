@@ -1,5 +1,6 @@
 package com.example.exam2020_certificateapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -57,6 +58,7 @@ public class CertificateListActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mAuth.getCurrentUser();
         Log.d("XYZ", mAuth.getCurrentUser().getUid());
+        user = (User) getIntent().getSerializableExtra("user");
         setUser();
         lv = findViewById(R.id.listCertificates);
         profilePic = findViewById(R.id.imageUser);
@@ -70,20 +72,20 @@ public class CertificateListActivity extends AppCompatActivity {
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), CertificateCEActivity.class); // detail view instead of register
+                Intent intent = new Intent(v.getContext(), CertificateCEActivity.class);
 
-                startActivity(intent);
+                startActivityForResult(intent, 30);
             }
         });
 
     }
 
     private void setUser() {
-        user = (User) getIntent().getSerializableExtra("user");
-        if (user.getmImage() != null) {
-            byte[] byteArray = user.getmImage();
-            Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            profilePic.setImageBitmap(bm);
+
+        if (user.getmImage() != null && !user.getmImage().isEmpty()) {
+//            byte[] byteArray = user.getmImage();
+//            Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+//            profilePic.setImageBitmap(bm);
         }
 
         if (user.getmCertificateList() != null) {
@@ -95,7 +97,7 @@ public class CertificateListActivity extends AppCompatActivity {
                         try {
                             final Certificate tempCert = documentSnapshot.toObject(Certificate.class);
                             File localFile = File.createTempFile("images","jpg");
-                            StorageReference riversRef = mStorageRef.child("certificates/" + user.getmUId() + "/" + "historyScreen.PNG");
+                            StorageReference riversRef = mStorageRef.child("images/" + user.getmUId() + "/" + "historyScreen.PNG");
                             Log.d("XYZ",riversRef.getPath());
                             Log.d("XYZ",tempCert.getmName() + tempCert.getmUId());
                             riversRef.getStream(new StreamDownloadTask.StreamProcessor() {
@@ -116,7 +118,7 @@ public class CertificateListActivity extends AppCompatActivity {
                             }).addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
                                 @Override
                                 public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
-                                    Log.d("123","download complete");
+                                    Log.d("XYZ","download complete");
                                     Log.d("XYZ","size: " + certificates.get(0).getmBitmap().length);
                                     setupListView();
 
@@ -143,10 +145,11 @@ public class CertificateListActivity extends AppCompatActivity {
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(view.getContext(), CertificateCEActivity.class); // detail view instead of register
+                    Intent intent = new Intent(view.getContext(), CertificateCEActivity.class);
                     Certificate cert = certificates.get(position);
                     Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
                     intent.putExtra("cert", cert);
+                    intent.putExtra("position", position);
 
 //                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
 //                    cert.getmBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -156,7 +159,7 @@ public class CertificateListActivity extends AppCompatActivity {
 //                    Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0,
 //                            byteArray.length);
 
-                    startActivity(intent);
+                    startActivityForResult(intent, 20);
                 }
             });
         }
@@ -167,8 +170,30 @@ public class CertificateListActivity extends AppCompatActivity {
         Log.d("XYZ", "redirected??");
         Intent intent = new Intent(this, UserSettingsActivity.class); //settings activity
         intent.putExtra("user",user);
-        startActivity(intent);
+        startActivityForResult(intent, 10);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.d("XYZ", "onResult resultCode = " + resultCode);
+        if (requestCode==10) {
+            if (resultCode == RESULT_OK) {
+                User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
+                user = updatedUser;
+                setUser();
+                byte[] byteArray = data.getExtras().getByteArray("profilePic");
+                if (byteArray != null) {
+                    Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                    profilePic.setImageBitmap(bm);
+                }
+            }
+        }
 
+        if (requestCode==20) {
+            Log.d("XYZ", "detail view");
+        }
+        if (requestCode==30) {
+            Log.d("XYZ", "new certificate view");
+        }
+    }
 }

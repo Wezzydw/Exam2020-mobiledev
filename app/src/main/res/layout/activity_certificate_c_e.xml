@@ -90,9 +90,10 @@
     <ImageView
         android:id="@+id/cceImageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_launcher_background"
-        android:layout_marginTop="20dp"/>
+        android:layout_height="200dp"
+        android:maxHeight="200dp"
+        android:layout_marginTop="20dp"
+        app:srcCompat="@drawable/ic_launcher_background" />
 
     <Button
         android:layout_marginTop="20dp"
