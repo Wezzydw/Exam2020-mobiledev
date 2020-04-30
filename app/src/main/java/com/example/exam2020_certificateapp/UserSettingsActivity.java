@@ -222,8 +222,9 @@ public class UserSettingsActivity extends AppCompatActivity {
         mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                // photo helper breaks the app, I think it is because the toast you put in the activity and it switches activity too fast 
+                // photo helper breaks the app, I think it is because the toast you put in the activity and it switches activity too fast
                 //mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
+                // String path = "images/" + mUser.getmUId() + "/profilePicture";
                 Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                 succesSaving.show();
             }
