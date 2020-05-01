@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
 
+import com.example.exam2020_certificateapp.helpers.PhotoHolder;
+import com.example.exam2020_certificateapp.helpers.UploadCallBack;
 import com.example.exam2020_certificateapp.model.User;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -81,10 +83,10 @@ public class UserSettingsActivity extends AppCompatActivity {
         mBtnDeleteUser = findViewById(R.id.settingsBtnDeleteUser);
 
         mEditTextName = findViewById(R.id.settingsInputName);
-         mEditTextUsername = findViewById(R.id.settingsInputUsername);
-         mEditTextPassword = findViewById(R.id.settingsInputPassword);
-         mEditTextPhone = findViewById(R.id.settingsInputPhone);
-         mEditTextEmail = findViewById(R.id.settingsInputEmail);
+        mEditTextUsername = findViewById(R.id.settingsInputUsername);
+        mEditTextPassword = findViewById(R.id.settingsInputPassword);
+        mEditTextPhone = findViewById(R.id.settingsInputPhone);
+        mEditTextEmail = findViewById(R.id.settingsInputEmail);
         View.OnClickListener buttons = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,17 +115,15 @@ public class UserSettingsActivity extends AppCompatActivity {
 
         mUser = (User) getIntent().getSerializableExtra("user");
 
-        if(mUser != null)
-        {
+        if (mUser != null) {
             initializeDisplayOfData();
-        }
-        else {
+        } else {
             finish();
         }
 
     }
 
-    void initializeDisplayOfData(){
+    void initializeDisplayOfData() {
         mEditTextEmail.setText(mUser.getmEmail());
         mEditTextName.setText(mUser.getmName());
         mEditTextPassword.setText("");
@@ -133,10 +133,11 @@ public class UserSettingsActivity extends AppCompatActivity {
 
 
     void helperOpenCamera() {
-            mPhotoHelper.openCamera();
+        mPhotoHelper.openCamera();
     }
+
     void helperOpenGallery() {
-            mPhotoHelper.openGallery();
+        mPhotoHelper.openGallery();
     }
 
     @Override
@@ -148,15 +149,14 @@ public class UserSettingsActivity extends AppCompatActivity {
             //takes Image from storage/SD
             uri = data.getData();
         }
-            if(uri != null) {
-                mCurrentImageUri = uri;
-                Bitmap bitmap = mPhotoHelper.getBitmap(uri);
-                mImageViewProfilePicture.setImageBitmap(bitmap);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byteArray = stream.toByteArray();
-            }
+        if (uri != null) {
+            mCurrentImageUri = uri;
+            Bitmap bitmap = mPhotoHelper.getBitmap(uri);
+            mImageViewProfilePicture.setImageBitmap(bitmap);
+
+        }
     }
+
     void returnToActivity() {
         promptForSaveSettings();
         //Save all data changes to firebase
@@ -210,7 +210,7 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     void saveSettings() {
 
-        User user = new User();
+        final User user = new User();
         user.setmEmail(mEditTextEmail.getText().toString());
         user.setmName(mEditTextName.getText().toString());
         user.setmUserName(mEditTextUsername.getText().toString());
@@ -219,12 +219,35 @@ public class UserSettingsActivity extends AppCompatActivity {
         user.setImage(mUser.getmImage());
         user.setmUId(mUser.getmUId());
 
+
+
+
         mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 // photo helper breaks the app, I think it is because the toast you put in the activity and it switches activity too fast
-                //mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
-                // String path = "images/" + mUser.getmUId() + "/profilePicture";
+                String path = "images/" + mUser.getmUId() + "/profilePicture";
+
+
+                mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
+                    @Override
+                    public void onCallback(boolean state) {
+                        if (state == true) {
+                            Bitmap bitmap = mPhotoHelper.getBitmap(mCurrentImageUri);
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            byteArray = stream.toByteArray();
+
+                            PhotoHolder extras = PhotoHolder.getInstance();
+                            Intent result = new Intent();
+                            result.putExtra("updatedUser", user);
+                            extras.putExtra("profilePic", byteArray);
+                            setResult(RESULT_OK, result);
+
+                            finish();
+                        }
+                    }
+                });
                 Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                 succesSaving.show();
             }
@@ -235,10 +258,7 @@ public class UserSettingsActivity extends AppCompatActivity {
                 errorSavingChanges.show();
             }
         });
-        Intent result = new Intent();
-        result.putExtra("updatedUser", user);
-        result.putExtra("profilePic", byteArray);
-        setResult(RESULT_OK, result);
+
     }
 
     @Override
@@ -248,30 +268,26 @@ public class UserSettingsActivity extends AppCompatActivity {
 
 
     void promptForSaveSettings() {
-        if (!mName.equals(mEditTextName.getText().toString())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Savesettings");
-            builder.setMessage("Save changes?");
-            builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    saveSettings();
-                    finish();
-                    dialog.dismiss();
-                }
-            });
-            builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
-        } else {
-            finish();
-        }
-    }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Savesettings");
+        builder.setMessage("Save changes?");
+        builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                saveSettings();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                finish();
+
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+}
 
 }

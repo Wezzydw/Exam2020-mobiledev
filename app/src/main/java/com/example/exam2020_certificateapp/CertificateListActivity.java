@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.model.Certificate;
 import com.example.exam2020_certificateapp.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -181,7 +182,9 @@ public class CertificateListActivity extends AppCompatActivity {
                 User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
                 user = updatedUser;
                 setUser();
-                byte[] byteArray = data.getExtras().getByteArray("profilePic");
+
+                PhotoHolder photoHolder = PhotoHolder.getInstance();
+                byte[] byteArray = (byte[])photoHolder.getExtra("profilePic");
                 if (byteArray != null) {
                     Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                     profilePic.setImageBitmap(bm);

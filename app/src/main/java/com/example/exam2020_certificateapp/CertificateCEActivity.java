@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
+import com.example.exam2020_certificateapp.helpers.UploadCallBack;
 import com.example.exam2020_certificateapp.model.Certificate;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -114,14 +116,22 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         //
         //mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
         //
-
+        final String path = "images/resttestetst";
         Certificate certificate;
         if(mCert != null) {
             certificate = mCert;
             mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
+                    mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
+                        @Override
+                        public void onCallback(boolean state) {
+                            if (state == true)
+                            {
+                                finish();
+                            }
+                        }
+                    });
                     Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                     succesSaving.show();
                 }
@@ -141,7 +151,15 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                     @Override
                     public void onSuccess(Void aVoid) {
                         // String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/" + UUID.randomUUID();
-                        mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
+                        mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
+                            @Override
+                            public void onCallback(boolean state) {
+                                if (state == true)
+                                {
+                                    finish();
+                                }
+                            }
+                        });
                         Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                         succesSaving.show();
                     }
@@ -165,16 +183,16 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    save();
-                    finish();
+                    Log.e("XYZ", "Never finishing");
                     dialog.dismiss();
+                    save();
                 }
             });
             builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    finish();
                     dialog.dismiss();
+                    finish();
                 }
             });
             AlertDialog alert = builder.create();

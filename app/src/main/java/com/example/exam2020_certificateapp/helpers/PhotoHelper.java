@@ -45,6 +45,12 @@ public class PhotoHelper {
     static final int REQUEST_IMAGE_UPLOAD = 2;
     StorageReference storageReference;
     FirebaseStorage storage;
+    //
+    // -1 = error
+    // 0 = false
+    // 1 = true
+    private int mIsDoneUploading = 0;
+    //
 
     String mCurrentPhotoPath = "";
     public PhotoHelper(Context cont, Activity activity, PackageManager packageManager) {
@@ -134,16 +140,18 @@ public class PhotoHelper {
     }
 
 
-    public void uploadImageToFirebase(Uri filepath, UUID uuid) { //String path instead of UUID so we can choose where the image gets saved
+    public void uploadImageToFirebase(Uri filepath, String path, final UploadCallBack callBack) { //String path instead of UUID so we can choose where the image gets saved
+
         final ProgressDialog progressDialog = new ProgressDialog(mCont);
         progressDialog.setTitle("Uploading");
         progressDialog.show();
-        StorageReference ref = storageReference.child("images/" + uuid.toString());
+        StorageReference ref = storageReference.child(path);
         ref.putFile(filepath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 progressDialog.dismiss();
                 Toast.makeText(mActivity, "Image has been uploaded succesfully ", Toast.LENGTH_LONG).show();
+                callBack.onCallback(true);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -154,6 +162,7 @@ public class PhotoHelper {
                                 "Failed " + e.getMessage(),
                                 Toast.LENGTH_SHORT)
                         .show();
+                callBack.onCallback(false);
             }
         }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -162,10 +171,12 @@ public class PhotoHelper {
                 progressDialog.setMessage("Uploaded " + (int) progress + "%");
             }
         });
+
     }
 
     public String getmCurrentPhotoPath() {
         return mCurrentPhotoPath;
     }
+
 
 }
