@@ -116,7 +116,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         //
         //mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
         //
-        final String path = "images/resttestetst";
+        final String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/" + UUID.randomUUID();
         Certificate certificate;
         if(mCert != null) {
             certificate = mCert;
