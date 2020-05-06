@@ -98,7 +98,7 @@ public class CertificateListActivity extends AppCompatActivity {
                         try {
                             final Certificate tempCert = documentSnapshot.toObject(Certificate.class);
                             File localFile = File.createTempFile("images","jpg");
-                            StorageReference riversRef = mStorageRef.child("images/" + user.getmUId() + "/" + "historyScreen.PNG");
+                            StorageReference riversRef = mStorageRef.child("images/" + user.getmUId() + "/certificates/" + uId);
                             Log.d("XYZ",riversRef.getPath());
                             Log.d("XYZ",tempCert.getmName() + tempCert.getmUId());
                             riversRef.getStream(new StreamDownloadTask.StreamProcessor() {
