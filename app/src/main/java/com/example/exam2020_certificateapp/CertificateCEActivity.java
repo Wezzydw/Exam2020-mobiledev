@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
@@ -116,14 +117,15 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         //
         //mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
         //
-        final String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/" + UUID.randomUUID();
-        Certificate certificate;
+        final String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/";
+        final Certificate certificate;
         if(mCert != null) {
             certificate = mCert;
             mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
+                    Log.d("XYZ", "nu sker der noget hmmm" + mAuth.getUid() + "==" + mCert.getmUId());
+                    mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + mCert.getmUId(), new UploadCallBack() {
                         @Override
                         public void onCallback(boolean state) {
                             if (state == true)
@@ -146,12 +148,21 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             if(mBitmap!=null){
                 certificate = new Certificate( dateText.getText().toString(), mTextCertName.getText().toString());
                 // certificate.setmBitmap(mBitmap);
+                certificate.setmUId(UUID.randomUUID().toString());
+                // mDb.collection("users").document(mAuth.getUid()).update("mCertificateList", certificate);
 
-                mDb.collection("certificates").document().set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         // String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/" + UUID.randomUUID();
-                        mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
+                        Log.d("XYZ", "nu sker der noget" + mAuth.getUid() + "==" + certificate.getmUId());
+                        mDb.document("users/" + mAuth.getUid()).update("mCertificateList", FieldValue.arrayUnion(certificate.getmUId())).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+
+                            }
+                        });
+                        mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + certificate.getmUId(), new UploadCallBack() {
                             @Override
                             public void onCallback(boolean state) {
                                 if (state == true)
