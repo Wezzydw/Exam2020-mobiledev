@@ -134,7 +134,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 public void onCallback(boolean state) {
                     if (state == true)
                     {
-                        storageReference.child("images/" + "mCert.getmUserid()" + "/certificates" + mCert.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        storageReference.child("images/" + mCert.getmUserUid() + "/certificates/" + mCert.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
                                 mCert.setmPhoto(uri.toString());
@@ -167,17 +167,17 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 certificate.setmUId(UUID.randomUUID().toString());
                 // mDb.collection("users").document(mAuth.getUid()).update("mCertificateList", certificate);
 
-                mCert.setmUserUid(mAuth.getCurrentUser().getUid());
-                Log.d("XYZ", "User ID ==" + mCert.getmUserUid());
+               certificate.setmUserUid(mAuth.getCurrentUser().getUid());
+                Log.d("XYZ", "User ID ==" + mAuth.getCurrentUser().getUid());
                 mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + certificate.getmUId(), new UploadCallBack() {
                     @Override
                     public void onCallback(boolean state) {
                         if (state == true)
                         {
-                            storageReference.child("images/" + "mCert.getmUserid()" + "/certificates" + mCert.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            storageReference.child("images/" + certificate.getmUserUid() + "/certificates/" + certificate.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-                                    mCert.setmPhoto(uri.toString());
+                                    certificate.setmPhoto(uri.toString());
                                     mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {

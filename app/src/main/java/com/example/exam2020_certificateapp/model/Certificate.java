@@ -19,7 +19,7 @@ public class Certificate implements Serializable {
     }
 
 
-    public Certificate(String mExpirationDate, byte[] mImageUrl, String mName, String mUId){
+    public Certificate(String mExpirationDate, byte[] mImageUrl, String mName, String mUId, String mUserUid){
 
         this.mExpirationDate = mExpirationDate;
         this.mBitmap = mImageUrl;
