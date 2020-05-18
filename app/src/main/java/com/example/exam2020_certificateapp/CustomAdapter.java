@@ -11,8 +11,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.exam2020_certificateapp.helpers.DownloadImageTask;
 import com.example.exam2020_certificateapp.model.Certificate;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,10 +51,7 @@ public class CustomAdapter extends BaseAdapter {
         ImageView certImage = (ImageView) view.findViewById(R.id.imageCertificate);
         TextView certExpirationDate = (TextView) view.findViewById(R.id.textExpirationDate);
         TextView certName = (TextView) view.findViewById(R.id.textName);
-
-        byte[] byteArray = certificates.get(position).getmBitmap();
-        Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        certImage.setImageBitmap(image);
+        new DownloadImageTask((ImageView) certImage).execute(certificates.get(position).getmPhoto());
         certExpirationDate.setText(certificates.get(position).getmExpirationDate().toString());
         certName.setText(certificates.get(position).getmName());
         return view;

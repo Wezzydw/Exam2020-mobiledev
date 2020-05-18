@@ -7,7 +7,6 @@ import java.util.Date;
 
 public class Certificate implements Serializable {
     private String mExpirationDate;
-    private byte[] mBitmap;
     private String mName;
     private String mUId;
     private String mUserUid;
@@ -18,11 +17,9 @@ public class Certificate implements Serializable {
 
     }
 
-
     public Certificate(String mExpirationDate, byte[] mImageUrl, String mName, String mUId, String mUserUid){
 
         this.mExpirationDate = mExpirationDate;
-        this.mBitmap = mImageUrl;
         this.mName = mName;
         this.mUId = mUId;
         this.mUserUid = mUserUid;
@@ -48,13 +45,6 @@ public class Certificate implements Serializable {
         this.mName = mName;
     }
 
-    public byte[] getmBitmap() {
-        return mBitmap;
-    }
-
-    public void setmBitmap(byte[] mBitmap) {
-        this.mBitmap = mBitmap;
-    }
 
     public String getmUId() {
         return mUId;

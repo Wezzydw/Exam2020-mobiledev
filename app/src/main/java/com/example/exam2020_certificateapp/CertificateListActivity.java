@@ -110,8 +110,6 @@ public class CertificateListActivity extends AppCompatActivity {
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                     byte[] byteArray = stream.toByteArray();
-
-                                    tempCert.setmBitmap(byteArray);
                                     certificates.add(tempCert);
                                     Log.d("XYZ", tempCert.getmName() + tempCert.getmExpirationDate());
                                     inputStream.close();
@@ -120,7 +118,6 @@ public class CertificateListActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
                                     Log.d("XYZ","download complete");
-                                    Log.d("XYZ","size: " + certificates.get(0).getmBitmap().length);
                                     setupListView();
 
 

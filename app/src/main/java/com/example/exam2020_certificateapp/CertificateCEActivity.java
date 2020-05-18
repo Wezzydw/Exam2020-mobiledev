@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.exam2020_certificateapp.helpers.DownloadImageTask;
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
 import com.example.exam2020_certificateapp.helpers.UploadCallBack;
 import com.example.exam2020_certificateapp.model.Certificate;
@@ -33,7 +34,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -242,9 +248,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         //ved ikke lige helt hvad der skal gøres med expdate
         dateText.setText(expirationDate);
         mTextCertName.setText(mCert.getmName());
-        byte[] byteArray = mCert.getmBitmap();
-        Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        mImageView.setImageBitmap(image);
+        new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
     }
 
     @Override
