@@ -121,6 +121,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         final Certificate certificate;
         if(mCert != null) {
             certificate = mCert;
+            mCert.setmUserUid(mAuth.getCurrentUser().getUid());
+            Log.d("XYZ", "User ID ==" + mCert.getmUserUid());
             mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -150,7 +152,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 // certificate.setmBitmap(mBitmap);
                 certificate.setmUId(UUID.randomUUID().toString());
                 // mDb.collection("users").document(mAuth.getUid()).update("mCertificateList", certificate);
-
+                mCert.setmUserUid(mAuth.getCurrentUser().getUid());
+                Log.d("XYZ", "User ID ==" + mCert.getmUserUid());
                 mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -219,7 +222,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         String expirationDate = DateFormat.getDateInstance().format(c.getTime());
 
         //ved ikke lige helt hvad der skal gøres med expdate
-        dateText.setText("Expiration Date: " + expirationDate);
+        dateText.setText(expirationDate);
         mTextCertName.setText(mCert.getmName());
         byte[] byteArray = mCert.getmBitmap();
         Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
