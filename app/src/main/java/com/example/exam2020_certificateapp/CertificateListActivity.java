@@ -118,9 +118,6 @@ public class CertificateListActivity extends AppCompatActivity {
                                 public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
                                     Log.d("XYZ","download complete");
                                     setupListView();
-
-
-
                                 }
                             });
                         } catch (IOException e) {
