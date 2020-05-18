@@ -11,7 +11,6 @@ public class Certificate implements Serializable {
     private String mUId;
     private String mUserUid;
     private String mPhoto;
-    private Bitmap mCurrentBitmap;
 
     public Certificate() {
 
@@ -68,11 +67,5 @@ public class Certificate implements Serializable {
 
     public void setmPhoto (String photo){
         this.mPhoto = photo;
-    }
-    public  void setCurrentBitmap(Bitmap bitmap) {
-        this.mCurrentBitmap  = bitmap;
-    }
-    public Bitmap getmCurrentBitmap() {
-        return mCurrentBitmap;
     }
 }

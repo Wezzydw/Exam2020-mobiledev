@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.exam2020_certificateapp.helpers.DownloadImageTask;
+import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.model.Certificate;
 
 import java.io.InputStream;
@@ -21,11 +22,13 @@ import java.util.List;
 public class CustomAdapter extends BaseAdapter {
     LayoutInflater inflter;
     List<Certificate> certificates;
+    private PhotoHolder mPhotoHolder;
 
     public CustomAdapter(Context applicationContext, ArrayList<Certificate> certificates) {
         this.certificates = certificates;
         inflter = (LayoutInflater.from(applicationContext));
         Log.d("XYZ", "customAdapter" + certificates.size());
+        mPhotoHolder = PhotoHolder.getInstance();
     }
 
     @Override
@@ -57,7 +60,7 @@ public class CustomAdapter extends BaseAdapter {
             new DownloadImageTask((ImageView) certImage).execute(certificates.get(position).getmPhoto());
         }*/
         //new DownloadImageTask((ImageView) certImage).execute(certificates.get(position).getmPhoto());
-        certImage.setImageBitmap(certificates.get(position).getmCurrentBitmap());
+        certImage.setImageBitmap((Bitmap) mPhotoHolder.getExtra(certificates.get(position).getmUId()));
         certExpirationDate.setText(certificates.get(position).getmExpirationDate().toString());
         certName.setText(certificates.get(position).getmName());
         return view;

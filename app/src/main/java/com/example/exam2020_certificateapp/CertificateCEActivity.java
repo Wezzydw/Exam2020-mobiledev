@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.exam2020_certificateapp.helpers.DownloadImageTask;
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
+import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.helpers.UploadCallBack;
 import com.example.exam2020_certificateapp.model.Certificate;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -49,6 +50,7 @@ import java.util.UUID;
 public class CertificateCEActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     PhotoHelper mPhotoHelper;
+    PhotoHolder mPhotoHolder;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_UPLOAD = 2;
     ImageView mImageView;
@@ -65,6 +67,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_c_e);
+        mPhotoHolder = PhotoHolder.getInstance();
         mImageView = findViewById(R.id.cceImageView);
         mDb = FirebaseFirestore.getInstance();
         dateText = (TextView) findViewById(R.id.cceTWDate);
@@ -248,7 +251,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         //ved ikke lige helt hvad der skal gøres med expdate
         dateText.setText(expirationDate);
         mTextCertName.setText(mCert.getmName());
-        new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
+        mImageView.setImageBitmap((Bitmap) mPhotoHolder.getExtra(mCert.getmUId()));
+        //new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
     }
 
     @Override
@@ -276,6 +280,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             mCurrentImageUri = uri;
             mBitmap = mPhotoHelper.getBitmap(uri);
             mImageView.setImageBitmap(mBitmap);
+            mPhotoHolder.putExtra(mCert.getmUId(), mBitmap);
         }
     }
     @Override

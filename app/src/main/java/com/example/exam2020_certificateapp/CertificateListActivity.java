@@ -46,14 +46,14 @@ public class CertificateListActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
     private ImageView profilePic;
-
+    private PhotoHolder mPhotoHolder;
     ListView lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_list);
-
+        mPhotoHolder = PhotoHolder.getInstance();
         mDb = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -108,7 +108,7 @@ public class CertificateListActivity extends AppCompatActivity {
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                     byte[] byteArray = stream.toByteArray();
-                                    tempCert.setCurrentBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
+                                    mPhotoHolder.putExtra(tempCert.getmUId(), bitmap);
                                     certificates.add(tempCert);
                                     Log.d("XYZ", tempCert.getmName() + tempCert.getmExpirationDate());
                                     inputStream.close();
@@ -144,7 +144,7 @@ public class CertificateListActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(view.getContext(), CertificateCEActivity.class);
                     Certificate cert = certificates.get(position);
-                    cert.setCurrentBitmap(null);
+                    //cert.setCurrentBitmap(null);
                     Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
                     intent.putExtra("cert", cert);
                     intent.putExtra("position", position);
