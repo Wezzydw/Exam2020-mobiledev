@@ -235,7 +235,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         String expirationDate = DateFormat.getDateInstance().format(c.getTime());
 
 
-        dateText.setText("Expiration Date: " + expirationDate);
+        dateText.setText(expirationDate);
     }
 
     @Override
