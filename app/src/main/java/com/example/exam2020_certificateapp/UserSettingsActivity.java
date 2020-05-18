@@ -218,26 +218,37 @@ public class UserSettingsActivity extends AppCompatActivity {
         user.setmPhone(mEditTextPhone.getText().toString());
         user.setImage(mUser.getmImage());
         user.setmUId(mUser.getmUId());
+        String path = "images/" + mUser.getmUId() + "/profilePicture";
 
-
-
-
-        mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+        mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
             @Override
-            public void onSuccess(Void aVoid) {
-                // photo helper breaks the app, I think it is because the toast you put in the activity and it switches activity too fast
-                String path = "images/" + mUser.getmUId() + "/profilePicture";
-
-
-                mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
-                    @Override
-                    public void onCallback(boolean state) {
-                        if (state == true) {
+            public void onCallback(boolean state) {
+                if (state == true) {
+                    storageReference.child("images/" + mUser.getmUId() + "/profilePicture").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            //user.setImage(uri.);
+                            Log.d("XYZAY", uri.toString());
+                            user.setImage(uri.toString());
+                            mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // photo helper breaks the app, I think it is because the toast you put in the activity and it switches activity too fast
+                                    Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                                    succesSaving.show();
+                                    Log.d("XYZA", user.getmImage());
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast errorSavingChanges = Toast.makeText(UserSettingsActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
+                                    errorSavingChanges.show();
+                                }
+                            });
                             Bitmap bitmap = mPhotoHelper.getBitmap(mCurrentImageUri);
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                             byteArray = stream.toByteArray();
-
                             PhotoHolder extras = PhotoHolder.getInstance();
                             Intent result = new Intent();
                             result.putExtra("updatedUser", user);
@@ -246,19 +257,10 @@ public class UserSettingsActivity extends AppCompatActivity {
 
                             finish();
                         }
-                    }
-                });
-                Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                succesSaving.show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast errorSavingChanges = Toast.makeText(UserSettingsActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
-                errorSavingChanges.show();
+                    });
+                }
             }
         });
-
     }
 
     @Override

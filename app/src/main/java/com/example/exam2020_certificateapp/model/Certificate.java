@@ -11,9 +11,25 @@ public class Certificate implements Serializable {
     private String mName;
     private String mUId;
     private String mUserUid;
+    private String mPhoto;
+
 
     public Certificate() {
 
+    }
+
+
+    public Certificate(String mExpirationDate, byte[] mImageUrl, String mName, String mUId){
+
+        this.mExpirationDate = mExpirationDate;
+        this.mBitmap = mImageUrl;
+        this.mName = mName;
+        this.mUId = mUId;
+        this.mUserUid = mUserUid;
+    }
+    public Certificate(String mExpirationDate, String mName) {
+        this.mExpirationDate = mExpirationDate;
+        this.mName = mName;
     }
 
     public String getmExpirationDate() {
@@ -32,11 +48,11 @@ public class Certificate implements Serializable {
         this.mName = mName;
     }
 
-    public  byte[] getmBitmap() {
+    public byte[] getmBitmap() {
         return mBitmap;
     }
 
-    public void setmBitmap( byte[] mBitmap) {
+    public void setmBitmap(byte[] mBitmap) {
         this.mBitmap = mBitmap;
     }
 
@@ -48,19 +64,20 @@ public class Certificate implements Serializable {
         this.mUId = mUId;
     }
 
-    public String getmUserUid() { return mUserUid; }
+    public String getmUserUid() {
+        return mUserUid;
+    }
 
-    public void setmUserUid(String mUserUid) { this.mUserUid = mUserUid; }
-
-    public Certificate(String mExpirationDate, byte[] mImageUrl, String mName, String mUId, String mUserUid) {
-        this.mExpirationDate = mExpirationDate;
-        this.mBitmap = mImageUrl;
-        this.mName = mName;
-        this.mUId = mUId;
+    public void setmUserUid(String mUserUid) {
         this.mUserUid = mUserUid;
     }
-    public Certificate(String mExpirationDate, String mName) {
-        this.mExpirationDate = mExpirationDate;
-        this.mName = mName;
+
+    public String getmPhoto () {
+        return mPhoto;
     }
+
+    public void setmPhoto (String photo){
+        this.mPhoto = photo;
+    }
+
 }
