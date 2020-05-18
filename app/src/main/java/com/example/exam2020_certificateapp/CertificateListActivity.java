@@ -104,12 +104,11 @@ public class CertificateListActivity extends AppCompatActivity {
                             riversRef.getStream(new StreamDownloadTask.StreamProcessor() {
                                 @Override
                                 public void doInBackground(StreamDownloadTask.TaskSnapshot taskSnapshot, InputStream inputStream) throws IOException {
-
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                     byte[] byteArray = stream.toByteArray();
+                                    tempCert.setCurrentBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
                                     certificates.add(tempCert);
                                     Log.d("XYZ", tempCert.getmName() + tempCert.getmExpirationDate());
                                     inputStream.close();
@@ -145,6 +144,7 @@ public class CertificateListActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(view.getContext(), CertificateCEActivity.class);
                     Certificate cert = certificates.get(position);
+                    cert.setCurrentBitmap(null);
                     Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
                     intent.putExtra("cert", cert);
                     intent.putExtra("position", position);
@@ -191,6 +191,8 @@ public class CertificateListActivity extends AppCompatActivity {
 
         if (requestCode==20) {
             Log.d("XYZ", "detail view");
+            certificates.clear();
+            setUser();
         }
         if (requestCode==30) {
             Log.d("XYZ", "new certificate view");

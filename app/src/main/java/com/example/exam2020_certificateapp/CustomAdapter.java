@@ -51,7 +51,13 @@ public class CustomAdapter extends BaseAdapter {
         ImageView certImage = (ImageView) view.findViewById(R.id.imageCertificate);
         TextView certExpirationDate = (TextView) view.findViewById(R.id.textExpirationDate);
         TextView certName = (TextView) view.findViewById(R.id.textName);
-        new DownloadImageTask((ImageView) certImage).execute(certificates.get(position).getmPhoto());
+/*        if(certificates.get(position).getmCurrentBitmap() != null)
+        {
+        } else {
+            new DownloadImageTask((ImageView) certImage).execute(certificates.get(position).getmPhoto());
+        }*/
+        //new DownloadImageTask((ImageView) certImage).execute(certificates.get(position).getmPhoto());
+        certImage.setImageBitmap(certificates.get(position).getmCurrentBitmap());
         certExpirationDate.setText(certificates.get(position).getmExpirationDate().toString());
         certName.setText(certificates.get(position).getmName());
         return view;
