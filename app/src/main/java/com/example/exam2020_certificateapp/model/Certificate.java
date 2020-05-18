@@ -10,6 +10,7 @@ public class Certificate implements Serializable {
     private byte[] mBitmap;
     private String mName;
     private String mUId;
+    private String mPhoto;
 
     public Certificate() {
 
@@ -47,6 +48,9 @@ public class Certificate implements Serializable {
         this.mUId = mUId;
     }
 
+    public String getmPhoto() {return mPhoto;}
+
+    public void setmPhoto(String photo) {this.mPhoto = photo;}
     public Certificate(String mExpirationDate, byte[] mImageUrl, String mName, String mUId) {
         this.mExpirationDate = mExpirationDate;
         this.mBitmap = mImageUrl;

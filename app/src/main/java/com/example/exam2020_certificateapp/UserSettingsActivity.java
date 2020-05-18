@@ -249,7 +249,6 @@ public class UserSettingsActivity extends AppCompatActivity {
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                             byteArray = stream.toByteArray();
-
                             PhotoHolder extras = PhotoHolder.getInstance();
                             Intent result = new Intent();
                             result.putExtra("updatedUser", user);

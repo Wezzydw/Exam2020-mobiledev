@@ -30,6 +30,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -51,6 +53,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     Bitmap mBitmap;
     Uri mCurrentImageUri;
     private FirebaseAuth mAuth;
+    FirebaseStorage storage;
+    StorageReference storageReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +65,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mCert = (Certificate) getIntent().getSerializableExtra("cert");
         mTextCertName = findViewById(R.id.cceETCertName);
         mAuth = FirebaseAuth.getInstance();
-
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
 
@@ -121,29 +126,37 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         final Certificate certificate;
         if(mCert != null) {
             certificate = mCert;
-            mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+            mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + mCert.getmUId(), new UploadCallBack() {
                 @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d("XYZ", "nu sker der noget hmmm" + mAuth.getUid() + "==" + mCert.getmUId());
-                    mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + mCert.getmUId(), new UploadCallBack() {
-                        @Override
-                        public void onCallback(boolean state) {
-                            if (state == true)
-                            {
-                                finish();
+                public void onCallback(boolean state) {
+                    if (state == true)
+                    {
+                        storageReference.child("images/" + "mCert.getmUserid()" + "/certificates" + mCert.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                mCert.setmPhoto(uri.toString());
+                                mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("XYZ", "nu sker der noget hmmm" + mAuth.getUid() + "==" + mCert.getmUId());
+                                        Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                                        succesSaving.show();
+                                        finish();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
+                                        errorSavingChanges.show();
+                                    }
+                                });
                             }
-                        }
-                    });
-                    Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                    succesSaving.show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
-                    errorSavingChanges.show();
+                        });
+                    }
                 }
             });
+
+
         } else {
             if(mBitmap!=null){
                 certificate = new Certificate( dateText.getText().toString(), mTextCertName.getText().toString());
@@ -151,40 +164,43 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 certificate.setmUId(UUID.randomUUID().toString());
                 // mDb.collection("users").document(mAuth.getUid()).update("mCertificateList", certificate);
 
-                mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + certificate.getmUId(), new UploadCallBack() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        // String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/" + UUID.randomUUID();
-                        Log.d("XYZ", "nu sker der noget" + mAuth.getUid() + "==" + certificate.getmUId());
-                        mDb.document("users/" + mAuth.getUid()).update("mCertificateList", FieldValue.arrayUnion(certificate.getmUId())).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-
-                            }
-                        });
-                        mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + certificate.getmUId(), new UploadCallBack() {
-                            @Override
-                            public void onCallback(boolean state) {
-                                if (state == true)
-                                {
-                                    finish();
+                    public void onCallback(boolean state) {
+                        if (state == true)
+                        {
+                            storageReference.child("images/" + "mCert.getmUserid()" + "/certificates" + mCert.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    mCert.setmPhoto(uri.toString());
+                                    mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/" + UUID.randomUUID();
+                                            Log.d("XYZ", "nu sker der noget" + mAuth.getUid() + "==" + certificate.getmUId());
+                                            mDb.document("users/" + mAuth.getUid()).update("mCertificateList", FieldValue.arrayUnion(certificate.getmUId())).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    finish();
+                                                    Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                                                    succesSaving.show();
+                                                }
+                                            });
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
+                                            errorSavingChanges.show();
+                                        }
+                                    });
                                 }
-                            }
-                        });
-                        Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                        succesSaving.show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
-                        errorSavingChanges.show();
+                            });
+                        }
                     }
                 });
             }
         }
-
-
     }
 
     void promptForSaveSettings() {

@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
         EditText getPassword = findViewById(R.id.loginEtPassword);
 
         //AUTO LOGIN//
+        //AUTO LOGIN//
+        getEmail.setText("a@hotmail.com");
+        getPassword.setText("12345678");
 
 
         final String email = getEmail.getText().toString();
