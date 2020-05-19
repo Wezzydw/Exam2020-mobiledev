@@ -60,7 +60,7 @@ public class CertificateListActivity extends AppCompatActivity {
         mAuth.getCurrentUser();
         Log.d("XYZ", mAuth.getCurrentUser().getUid());
         user = (User) getIntent().getSerializableExtra("user");
-        setUser();
+
         lv = findViewById(R.id.listCertificates);
         profilePic = findViewById(R.id.imageUser);
         profilePic.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +78,7 @@ public class CertificateListActivity extends AppCompatActivity {
                 startActivityForResult(intent, 30);
             }
         });
-
+        setUser();
     }
 
     private void setUser() {
@@ -91,7 +91,15 @@ public class CertificateListActivity extends AppCompatActivity {
 
         if (user.getmCertificateList() != null) {
             for (final String uId: user.getmCertificateList()) {
+                if(mPhotoHolder.hasExtra(uId))
+                {
+                    certificates.add((Certificate) mPhotoHolder.getExtra(uId));
+                    setupListView();
+                    continue;
+                }
+                else {
                 //mDb.batch().
+                Log.d("XYZCert", uId);
                 mDb.document("certificates/" + uId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -108,7 +116,8 @@ public class CertificateListActivity extends AppCompatActivity {
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                     byte[] byteArray = stream.toByteArray();
-                                    mPhotoHolder.putExtra(tempCert.getmUId(), bitmap);
+                                    mPhotoHolder.putExtra(tempCert.getmUId(), tempCert);
+                                    mPhotoHolder.putExtra("bitmap" +tempCert.getmUId(), bitmap);
                                     certificates.add(tempCert);
                                     Log.d("XYZ", tempCert.getmName() + tempCert.getmExpirationDate());
                                     inputStream.close();
@@ -124,7 +133,7 @@ public class CertificateListActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                });
+                });}
             }
         }
         TextView textUserName = findViewById(R.id.textUserName);
@@ -132,6 +141,9 @@ public class CertificateListActivity extends AppCompatActivity {
     }
 
     private void setupListView() {
+
+        if(certificates.size() == user.getmCertificateList().size()) {
+
 
         if (certificates != null|| certificates.isEmpty()) {
             CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), certificates);
@@ -157,6 +169,7 @@ public class CertificateListActivity extends AppCompatActivity {
                     startActivityForResult(intent, 20);
                 }
             });
+        }
         }
 
     }

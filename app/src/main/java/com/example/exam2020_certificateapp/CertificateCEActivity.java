@@ -150,6 +150,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                                 mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        mPhotoHolder.putExtra(mCert.getmUId(), mCert);
                                         Log.d("XYZ", "nu sker der noget hmmm" + mAuth.getUid() + "==" + mCert.getmUId());
                                         Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                                         succesSaving.show();
@@ -195,6 +196,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                                             mDb.document("users/" + mAuth.getUid()).update("mCertificateList", FieldValue.arrayUnion(certificate.getmUId())).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
+                                                    mPhotoHolder.putExtra(certificate.getmUId(), certificate);
                                                     finish();
                                                     Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                                                     succesSaving.show();
@@ -251,7 +253,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         //ved ikke lige helt hvad der skal gøres med expdate
         dateText.setText(expirationDate);
         mTextCertName.setText(mCert.getmName());
-        mImageView.setImageBitmap((Bitmap) mPhotoHolder.getExtra(mCert.getmUId()));
+        mImageView.setImageBitmap((Bitmap) mPhotoHolder.getExtra("bitmap"+mCert.getmUId()));
         //new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
     }
 
@@ -280,7 +282,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             mCurrentImageUri = uri;
             mBitmap = mPhotoHelper.getBitmap(uri);
             mImageView.setImageBitmap(mBitmap);
-            mPhotoHolder.putExtra(mCert.getmUId(), mBitmap);
+            mPhotoHolder.putExtra("bitmap"+mCert.getmUId(), mBitmap);
         }
     }
     @Override
