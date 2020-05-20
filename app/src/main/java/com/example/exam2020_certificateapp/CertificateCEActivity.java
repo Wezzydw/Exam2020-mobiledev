@@ -25,6 +25,7 @@ import com.example.exam2020_certificateapp.helpers.PhotoHelper;
 import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.helpers.UploadCallBack;
 import com.example.exam2020_certificateapp.model.Certificate;
+import com.example.exam2020_certificateapp.swipe.OnSwipeListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -122,7 +123,14 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         else {
             mBtnSave.setText("Create new Certificate");
         }
-
+        View view = getWindow().getDecorView();
+        view.setOnTouchListener(new OnSwipeListener(this) {
+            @Override
+            public void onSwipeRight() {
+                Log.d("SWIPE", "RIGHT");
+                promptForSaveSettings();
+            }
+        });
 
     }
 

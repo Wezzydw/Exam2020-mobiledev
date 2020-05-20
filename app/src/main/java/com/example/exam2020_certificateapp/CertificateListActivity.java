@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.model.Certificate;
 import com.example.exam2020_certificateapp.model.User;
+import com.example.exam2020_certificateapp.swipe.CertificateAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -48,11 +50,16 @@ public class CertificateListActivity extends AppCompatActivity {
     private ImageView profilePic;
     private PhotoHolder mPhotoHolder;
     ListView lv;
+    private ViewPager viewPager;
+    private CertificateAdapter certificateAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_list);
+        viewPager = findViewById(R.id.viewpager);
+        certificateAdapter = new CertificateAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(certificateAdapter);
         mPhotoHolder = PhotoHolder.getInstance();
         mDb = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -183,15 +190,16 @@ public class CertificateListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         Log.d("XYZ", "onResult resultCode = " + resultCode);
-        if (requestCode==10) {
+        if (requestCode == 10) {
             if (resultCode == RESULT_OK) {
                 User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
                 user = updatedUser;
                 setUser();
 
                 PhotoHolder photoHolder = PhotoHolder.getInstance();
-                byte[] byteArray = (byte[])photoHolder.getExtra("profilePic");
+                byte[] byteArray = (byte[]) photoHolder.getExtra("profilePic");
                 if (byteArray != null) {
                     Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                     profilePic.setImageBitmap(bm);
@@ -199,12 +207,12 @@ public class CertificateListActivity extends AppCompatActivity {
             }
         }
 
-        if (requestCode==20) {
+        if (requestCode == 20) {
             Log.d("XYZ", "detail view");
             certificates.clear();
             setUser();
         }
-        if (requestCode==30) {
+        if (requestCode == 30) {
             Log.d("XYZ", "new certificate view");
         }
     }
