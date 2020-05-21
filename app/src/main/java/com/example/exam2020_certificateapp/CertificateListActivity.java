@@ -132,9 +132,9 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                        Log.d("SETUP", "In task.getReuslt");
                         final Certificate tempCert = documentSnapshot.toObject(Certificate.class);
                         StorageReference riversRef = mStorageRef.child("images/" + user.getmUId() + "/certificates/" + tempCert.getmUId());
-
                         riversRef.getStream(new StreamDownloadTask.StreamProcessor() {
                             @Override
                             public void doInBackground(@NonNull StreamDownloadTask.TaskSnapshot taskSnapshot, @NonNull InputStream inputStream) throws IOException {
@@ -142,9 +142,17 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                                 mPhotoHolder.putExtra(tempCert.getmUId(), tempCert);
                                 mPhotoHolder.putExtra("bitmap" +tempCert.getmUId(), bitmap);
                                 certificates.add(tempCert);
+                                Log.d("SETUP", tempCert.getmUId());
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<StreamDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<StreamDownloadTask.TaskSnapshot> task) {
+                                Log.d("SETUP", "Downlaod is complete");
+                                setupListView();
                             }
                         });
                     }
+
                 }
             }
         });
@@ -214,6 +222,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     }*/
 
     private void setupListView() {
+        Log.d("SETUP", "IN LIST VIEW");
         if (certificates != null|| certificates.isEmpty()) {
             //Sort list
             final ArrayList<Certificate> sortCertificates = new ArrayList<>();
@@ -315,8 +324,8 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 Collections.sort(certificates, new Comparator<Certificate>() {
                     @Override
                     public int compare(Certificate o1, Certificate o2) {
-                        SimpleDateFormat formatter1 = new SimpleDateFormat("dd MMM yyyy");
-                        SimpleDateFormat formatter2 = new SimpleDateFormat("dd MMM yyyy");
+                        SimpleDateFormat formatter1 = new SimpleDateFormat("dd/mm/yyyy");
+                        SimpleDateFormat formatter2 = new SimpleDateFormat("dd/mm/yyyy");
                         Date date1 = null;
                         Date date2 = null;
                         try {
