@@ -25,6 +25,7 @@ import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.helpers.UploadCallBack;
 import com.example.exam2020_certificateapp.model.User;
 
+import com.example.exam2020_certificateapp.swipe.OnSwipeListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -124,7 +125,14 @@ public class UserSettingsActivity extends AppCompatActivity {
         } else {
             finish();
         }
-
+        View view = getWindow().getDecorView();
+        view.setOnTouchListener(new OnSwipeListener(this) {
+            @Override
+            public void onSwipeRight() {
+                Log.d("SWIPE", "RIGHT");
+                promptForSaveSettings();
+            }
+        });
     }
 
     void initializeDisplayOfData() {

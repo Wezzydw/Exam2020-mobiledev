@@ -15,7 +15,7 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Spinner
@@ -30,6 +30,13 @@
             android:layout_height="wrap_content"
             android:gravity="end"
             android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/certListTXTSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Search Here" />
 
             <TextView
                 android:id="@+id/textUserName"
@@ -50,6 +57,12 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/buttonAdd"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:background="@android:drawable/ic_input_add" />
     <ListView
         android:id="@+id/listCertificates"
         android:layout_width="match_parent"
@@ -57,11 +70,11 @@
 
     </ListView>
 
-    <Button
-        android:id="@+id/buttonAdd"
-        android:layout_width="75dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:background="@android:drawable/ic_input_add" />
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

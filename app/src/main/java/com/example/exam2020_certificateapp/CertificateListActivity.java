@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.content.Intent;
@@ -11,17 +12,22 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.model.Certificate;
 import com.example.exam2020_certificateapp.model.User;
+import com.example.exam2020_certificateapp.swipe.CertificateAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -35,11 +41,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 
-public class CertificateListActivity extends AppCompatActivity {
+public class CertificateListActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     User user;
     ArrayList<Certificate> certificates = new ArrayList<Certificate>();
     private FirebaseFirestore mDb;
@@ -48,11 +59,19 @@ public class CertificateListActivity extends AppCompatActivity {
     private ImageView profilePic;
     private PhotoHolder mPhotoHolder;
     ListView lv;
+    private ViewPager viewPager;
+    private CertificateAdapter certificateAdapter;
+    private Spinner spinner;
+    private EditText mTxtSearch;
+    private String mCurrentSearchString = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_list);
+        viewPager = findViewById(R.id.viewpager);
+        certificateAdapter = new CertificateAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(certificateAdapter);
         mPhotoHolder = PhotoHolder.getInstance();
         mDb = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -60,13 +79,32 @@ public class CertificateListActivity extends AppCompatActivity {
         mAuth.getCurrentUser();
         Log.d("XYZ", mAuth.getCurrentUser().getUid());
         user = (User) getIntent().getSerializableExtra("user");
-
+        spinner = findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(this);
         lv = findViewById(R.id.listCertificates);
         profilePic = findViewById(R.id.imageUser);
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 redirectToSettings();
+            }
+        });
+        mTxtSearch = findViewById(R.id.certListTXTSearch);
+        mTxtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mCurrentSearchString = s.toString();
+                setupListView();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
         Button buttonAdd = findViewById(R.id.buttonAdd);
@@ -146,13 +184,29 @@ public class CertificateListActivity extends AppCompatActivity {
 
 
         if (certificates != null|| certificates.isEmpty()) {
-            CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), certificates);
+            //Sort list
+            final ArrayList<Certificate> sortCertificates = new ArrayList<>();
+            for (Certificate cert : certificates)
+            {
+                if(cert.getmName().toLowerCase().contains(mCurrentSearchString.toLowerCase()))
+                {
+                    sortCertificates.add(cert);
+                    continue;
+                }
+                if(cert.getmExpirationDate().toLowerCase().contains(mCurrentSearchString.toLowerCase())){
+                    sortCertificates.add(cert);
+                    continue;
+                }
+
+            }
+            //
+            CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), sortCertificates);
             lv.setAdapter(customAdapter);
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(view.getContext(), CertificateCEActivity.class);
-                    Certificate cert = certificates.get(position);
+                    Certificate cert = sortCertificates.get(position);
                     //cert.setCurrentBitmap(null);
                     Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
                     intent.putExtra("cert", cert);
@@ -183,15 +237,16 @@ public class CertificateListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         Log.d("XYZ", "onResult resultCode = " + resultCode);
-        if (requestCode==10) {
+        if (requestCode == 10) {
             if (resultCode == RESULT_OK) {
                 User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
                 user = updatedUser;
                 setUser();
 
                 PhotoHolder photoHolder = PhotoHolder.getInstance();
-                byte[] byteArray = (byte[])photoHolder.getExtra("profilePic");
+                byte[] byteArray = (byte[]) photoHolder.getExtra("profilePic");
                 if (byteArray != null) {
                     Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                     profilePic.setImageBitmap(bm);
@@ -199,13 +254,60 @@ public class CertificateListActivity extends AppCompatActivity {
             }
         }
 
-        if (requestCode==20) {
+        if (requestCode == 20) {
             Log.d("XYZ", "detail view");
             certificates.clear();
             setUser();
         }
-        if (requestCode==30) {
+        if (requestCode == 30) {
             Log.d("XYZ", "new certificate view");
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("SORT", "Above");
+        switch (position) {
+            case 0:
+                Log.d("SORT", "Aplha");
+                //sort alphabetical
+                Collections.sort(certificates, new Comparator<Certificate>() {
+                    @Override
+                    public int compare(Certificate o1, Certificate o2) {
+                        return o1.getmName().compareToIgnoreCase(o2.getmName());
+                    }
+                });
+                setupListView();
+                break;
+            case 1:
+                Log.d("SORT", "Exp");
+                Collections.sort(certificates, new Comparator<Certificate>() {
+                    @Override
+                    public int compare(Certificate o1, Certificate o2) {
+                        SimpleDateFormat formatter1 = new SimpleDateFormat("dd MMM yyyy");
+                        SimpleDateFormat formatter2 = new SimpleDateFormat("dd MMM yyyy");
+                        Date date1 = null;
+                        Date date2 = null;
+                        try {
+                            date1 = formatter1.parse(o1.getmExpirationDate());
+                            date2 = formatter2.parse(o2.getmExpirationDate());
+                            Log.d("SORT", date1.toString());
+                            Log.d("SORT", date2.toString());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        return date1.compareTo(date2);
+                    }
+                });
+                setupListView();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Log.d("SORT", "NOTHING");
     }
 }
