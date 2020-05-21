@@ -70,6 +70,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     private Spinner spinner;
     private EditText mTxtSearch;
     private String mCurrentSearchString = "";
+    private int index = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +132,8 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
+                    index = 0;
+                    final int size = task.getResult().size();
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                         Log.d("SETUP", "In task.getReuslt");
                         final Certificate tempCert = documentSnapshot.toObject(Certificate.class);
@@ -147,8 +150,13 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                         }).addOnCompleteListener(new OnCompleteListener<StreamDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<StreamDownloadTask.TaskSnapshot> task) {
+                                index++;
                                 Log.d("SETUP", "Downlaod is complete");
-                                setupListView();
+                                if(size == index)
+                                {
+                                    Log.d("SETUP", "size("+size+") == index("+index+") ");
+                                    setupListView();
+                                }
                             }
                         });
                     }
@@ -297,6 +305,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         if (requestCode == 20) {
             Log.d("XYZ", "detail view");
             certificates.clear();
+            getAllCertificatesFromUser();
             //setUser();
         }
         if (requestCode == 30) {
