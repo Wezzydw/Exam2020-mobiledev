@@ -1,5 +1,6 @@
 package com.example.exam2020_certificateapp;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -28,16 +29,21 @@ import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.model.Certificate;
 import com.example.exam2020_certificateapp.model.User;
 import com.example.exam2020_certificateapp.swipe.CertificateAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StreamDownloadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,10 +122,39 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 startActivityForResult(intent, 30);
             }
         });
-        setUser();
+        getAllCertificatesFromUser();
     }
 
-    private void setUser() {
+    private void getAllCertificatesFromUser() {
+        Log.d("SETUP", "Setting up");
+        mDb.collection("certificates").whereEqualTo("mUserUid", user.getmUId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                        final Certificate tempCert = documentSnapshot.toObject(Certificate.class);
+                        StorageReference riversRef = mStorageRef.child("images/" + user.getmUId() + "/certificates/" + tempCert.getmUId());
+
+                        riversRef.getStream(new StreamDownloadTask.StreamProcessor() {
+                            @Override
+                            public void doInBackground(@NonNull StreamDownloadTask.TaskSnapshot taskSnapshot, @NonNull InputStream inputStream) throws IOException {
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                mPhotoHolder.putExtra(tempCert.getmUId(), tempCert);
+                                mPhotoHolder.putExtra("bitmap" +tempCert.getmUId(), bitmap);
+                                certificates.add(tempCert);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        TextView textUserName = findViewById(R.id.textUserName);
+        textUserName.setText(user.getmUserName());
+    }
+
+
+
+    /*private void setUser() {
 
         if (user.getmImage() != null && !user.getmImage().isEmpty()) {
 //            byte[] byteArray = user.getmImage();
@@ -176,13 +211,9 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         }
         TextView textUserName = findViewById(R.id.textUserName);
         textUserName.setText(user.getmUserName());
-    }
+    }*/
 
     private void setupListView() {
-
-        if(certificates.size() == user.getmCertificateList().size()) {
-
-
         if (certificates != null|| certificates.isEmpty()) {
             //Sort list
             final ArrayList<Certificate> sortCertificates = new ArrayList<>();
@@ -224,7 +255,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 }
             });
         }
-        }
+
 
     }
 
@@ -243,7 +274,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
             if (resultCode == RESULT_OK) {
                 User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
                 user = updatedUser;
-                setUser();
+                //setUser();
 
                 PhotoHolder photoHolder = PhotoHolder.getInstance();
                 byte[] byteArray = (byte[]) photoHolder.getExtra("profilePic");
@@ -257,7 +288,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         if (requestCode == 20) {
             Log.d("XYZ", "detail view");
             certificates.clear();
-            setUser();
+            //setUser();
         }
         if (requestCode == 30) {
             Log.d("XYZ", "new certificate view");
