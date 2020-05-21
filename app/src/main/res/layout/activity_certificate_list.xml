@@ -15,7 +15,7 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Spinner
@@ -30,6 +30,13 @@
             android:layout_height="wrap_content"
             android:gravity="end"
             android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/certListTXTSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Search Here" />
 
             <TextView
                 android:id="@+id/textUserName"

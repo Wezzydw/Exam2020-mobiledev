@@ -12,10 +12,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -59,6 +62,8 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     private ViewPager viewPager;
     private CertificateAdapter certificateAdapter;
     private Spinner spinner;
+    private EditText mTxtSearch;
+    private String mCurrentSearchString = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,24 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
             @Override
             public void onClick(View v) {
                 redirectToSettings();
+            }
+        });
+        mTxtSearch = findViewById(R.id.certListTXTSearch);
+        mTxtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mCurrentSearchString = s.toString();
+                setupListView();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
         Button buttonAdd = findViewById(R.id.buttonAdd);
@@ -162,15 +185,28 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
 
         if (certificates != null|| certificates.isEmpty()) {
             //Sort list
+            final ArrayList<Certificate> sortCertificates = new ArrayList<>();
+            for (Certificate cert : certificates)
+            {
+                if(cert.getmName().toLowerCase().contains(mCurrentSearchString.toLowerCase()))
+                {
+                    sortCertificates.add(cert);
+                    continue;
+                }
+                if(cert.getmExpirationDate().toLowerCase().contains(mCurrentSearchString.toLowerCase())){
+                    sortCertificates.add(cert);
+                    continue;
+                }
 
+            }
             //
-            CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), certificates);
+            CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), sortCertificates);
             lv.setAdapter(customAdapter);
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(view.getContext(), CertificateCEActivity.class);
-                    Certificate cert = certificates.get(position);
+                    Certificate cert = sortCertificates.get(position);
                     //cert.setCurrentBitmap(null);
                     Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
                     intent.putExtra("cert", cert);
@@ -260,7 +296,6 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-
                         return date1.compareTo(date2);
                     }
                 });
