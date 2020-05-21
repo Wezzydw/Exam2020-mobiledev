@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.exam2020_certificateapp.helpers.PhotoHolder;
@@ -38,10 +39,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 
-public class CertificateListActivity extends AppCompatActivity {
+public class CertificateListActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     User user;
     ArrayList<Certificate> certificates = new ArrayList<Certificate>();
     private FirebaseFirestore mDb;
@@ -52,6 +55,7 @@ public class CertificateListActivity extends AppCompatActivity {
     ListView lv;
     private ViewPager viewPager;
     private CertificateAdapter certificateAdapter;
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +71,8 @@ public class CertificateListActivity extends AppCompatActivity {
         mAuth.getCurrentUser();
         Log.d("XYZ", mAuth.getCurrentUser().getUid());
         user = (User) getIntent().getSerializableExtra("user");
-
+        spinner = findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(this);
         lv = findViewById(R.id.listCertificates);
         profilePic = findViewById(R.id.imageUser);
         profilePic.setOnClickListener(new View.OnClickListener() {
@@ -153,6 +158,9 @@ public class CertificateListActivity extends AppCompatActivity {
 
 
         if (certificates != null|| certificates.isEmpty()) {
+            //Sort list
+
+            //
             CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), certificates);
             lv.setAdapter(customAdapter);
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -215,5 +223,40 @@ public class CertificateListActivity extends AppCompatActivity {
         if (requestCode == 30) {
             Log.d("XYZ", "new certificate view");
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("SORT", "Above");
+        switch (position) {
+            case 0:
+                Log.d("SORT", "Aplha");
+                //sort alphabetical
+                Collections.sort(certificates, new Comparator<Certificate>() {
+                    @Override
+                    public int compare(Certificate o1, Certificate o2) {
+                        return o1.getmName().compareToIgnoreCase(o2.getmName());
+                    }
+                });
+                setupListView();
+                break;
+            case 1:
+                Log.d("SORT", "Exp");
+                Collections.sort(certificates, new Comparator<Certificate>() {
+                    @Override
+                    public int compare(Certificate o1, Certificate o2) {
+                        return o1.getmExpirationDate().compareToIgnoreCase(o2.getmExpirationDate());
+                    }
+                });
+                setupListView();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Log.d("SORT", "NOTHING");
     }
 }
