@@ -38,9 +38,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 
@@ -245,7 +248,20 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 Collections.sort(certificates, new Comparator<Certificate>() {
                     @Override
                     public int compare(Certificate o1, Certificate o2) {
-                        return o1.getmExpirationDate().compareToIgnoreCase(o2.getmExpirationDate());
+                        SimpleDateFormat formatter1 = new SimpleDateFormat("dd MMM yyyy");
+                        SimpleDateFormat formatter2 = new SimpleDateFormat("dd MMM yyyy");
+                        Date date1 = null;
+                        Date date2 = null;
+                        try {
+                            date1 = formatter1.parse(o1.getmExpirationDate());
+                            date2 = formatter2.parse(o2.getmExpirationDate());
+                            Log.d("SORT", date1.toString());
+                            Log.d("SORT", date2.toString());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        return date1.compareTo(date2);
                     }
                 });
                 setupListView();
