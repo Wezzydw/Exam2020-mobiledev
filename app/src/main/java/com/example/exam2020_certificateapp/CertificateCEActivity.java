@@ -45,6 +45,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -126,8 +127,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         View view = getWindow().getDecorView();
         view.setOnTouchListener(new OnSwipeListener(this) {
             @Override
-            public void onSwipeRight() {
-                Log.d("SWIPE", "RIGHT");
+            public void onSwipeLeft() {
+                Log.d("SWIPE", "LEFT");
                 promptForSaveSettings();
             }
         });
@@ -175,16 +176,11 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                mDb.document("certificates/" + certificate.getmUserUid()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        mPhotoHolder.putExtra(certificate.getmUId(), certificate);
-                        Log.d("FASTER", certificate.getmName());
-                        finish();
-                        Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                        succesSaving.show();
-                    }
-                });
+                mPhotoHolder.putExtra(certificate.getmUId(), certificate);
+                Log.d("FASTER", certificate.getmName());
+                finish();
+                Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                succesSaving.show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -314,13 +310,10 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     void initializeDisplayOfData(){
         Calendar c = Calendar.getInstance();
         //use real data here
-        c.set(Calendar.YEAR, 2021);
-        c.set(Calendar.MONTH, 4);
-        c.set(Calendar.DAY_OF_MONTH, 28);
-        String expirationDate = DateFormat.getDateInstance().format(c.getTime());
+        String expirationDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK).format(c.getTime());
 
         //ved ikke lige helt hvad der skal gøres med expdate
-        dateText.setText(expirationDate);
+        dateText.setText(mCert.getmExpirationDate());
         mTextCertName.setText(mCert.getmName());
         mImageView.setImageBitmap((Bitmap) mPhotoHolder.getExtra("bitmap"+mCert.getmUId()));
         //new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
@@ -332,7 +325,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        String expirationDate = DateFormat.getDateInstance().format(c.getTime());
+        String expirationDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK).format(c.getTime());
 
 
         dateText.setText(expirationDate);

@@ -1,5 +1,6 @@
 package com.example.exam2020_certificateapp;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -7,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -24,20 +26,26 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.exam2020_certificateapp.helpers.DownloadImageTask;
 import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.model.Certificate;
 import com.example.exam2020_certificateapp.model.User;
 import com.example.exam2020_certificateapp.swipe.CertificateAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StreamDownloadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,14 +72,16 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     private Spinner spinner;
     private EditText mTxtSearch;
     private String mCurrentSearchString = "";
+    private int index = -1;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_list);
-        viewPager = findViewById(R.id.viewpager);
-        certificateAdapter = new CertificateAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(certificateAdapter);
+        //viewPager = findViewById(R.id.viewpager);
+        //certificateAdapter = new CertificateAdapter(getSupportFragmentManager());
+        //viewPager.setAdapter(certificateAdapter);
         mPhotoHolder = PhotoHolder.getInstance();
         mDb = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -82,6 +92,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         spinner = findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
         lv = findViewById(R.id.listCertificates);
+
         profilePic = findViewById(R.id.imageUser);
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +100,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 redirectToSettings();
             }
         });
+        getImageForUser();
         mTxtSearch = findViewById(R.id.certListTXTSearch);
         mTxtSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -116,10 +128,56 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 startActivityForResult(intent, 30);
             }
         });
-        setUser();
+        getAllCertificatesFromUser();
+        progressBar();
     }
 
-    private void setUser() {
+    private void getAllCertificatesFromUser() {
+        Log.d("SETUP", "Setting up");
+        mDb.collection("certificates").whereEqualTo("mUserUid", user.getmUId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    index = 0;
+                    final int size = task.getResult().size();
+                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                        Log.d("SETUP", "In task.getReuslt");
+                        final Certificate tempCert = documentSnapshot.toObject(Certificate.class);
+                        StorageReference riversRef = mStorageRef.child("images/" + user.getmUId() + "/certificates/" + tempCert.getmUId());
+                        riversRef.getStream(new StreamDownloadTask.StreamProcessor() {
+                            @Override
+                            public void doInBackground(@NonNull StreamDownloadTask.TaskSnapshot taskSnapshot, @NonNull InputStream inputStream) throws IOException {
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                mPhotoHolder.putExtra(tempCert.getmUId(), tempCert);
+                                mPhotoHolder.putExtra("bitmap" +tempCert.getmUId(), bitmap);
+                                certificates.add(tempCert);
+                                Log.d("SETUP", tempCert.getmUId());
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<StreamDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<StreamDownloadTask.TaskSnapshot> task) {
+                                index++;
+                                Log.d("SETUP", "Downlaod is complete");
+                                if(size == index)
+                                {
+                                    dialog.dismiss();
+                                    Log.d("SETUP", "size("+size+") == index("+index+") ");
+                                    setupListView();
+                                }
+                            }
+                        });
+                    }
+
+                }
+            }
+        });
+        TextView textUserName = findViewById(R.id.textUserName);
+        textUserName.setText(user.getmUserName());
+    }
+
+
+
+    /*private void setUser() {
 
         if (user.getmImage() != null && !user.getmImage().isEmpty()) {
 //            byte[] byteArray = user.getmImage();
@@ -176,13 +234,10 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         }
         TextView textUserName = findViewById(R.id.textUserName);
         textUserName.setText(user.getmUserName());
-    }
+    }*/
 
     private void setupListView() {
-
-        if(certificates.size() == user.getmCertificateList().size()) {
-
-
+        Log.d("RESULT", "IN LIST VIEW");
         if (certificates != null|| certificates.isEmpty()) {
             //Sort list
             final ArrayList<Certificate> sortCertificates = new ArrayList<>();
@@ -208,7 +263,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                     Intent intent = new Intent(view.getContext(), CertificateCEActivity.class);
                     Certificate cert = sortCertificates.get(position);
                     //cert.setCurrentBitmap(null);
-                    Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
+                    Log.d("RESULT", cert.getmName() + cert.getmExpirationDate());
                     intent.putExtra("cert", cert);
                     intent.putExtra("position", position);
 
@@ -224,7 +279,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 }
             });
         }
-        }
+
 
     }
 
@@ -238,12 +293,12 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("XYZ", "onResult resultCode = " + resultCode);
+        Log.d("RESULT", "onResult resultCode = " + resultCode);
         if (requestCode == 10) {
             if (resultCode == RESULT_OK) {
                 User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
                 user = updatedUser;
-                setUser();
+                //setUser();
 
                 PhotoHolder photoHolder = PhotoHolder.getInstance();
                 byte[] byteArray = (byte[]) photoHolder.getExtra("profilePic");
@@ -255,12 +310,17 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         }
 
         if (requestCode == 20) {
-            Log.d("XYZ", "detail view");
+            Log.d("RESULT", "detail view");
             certificates.clear();
-            setUser();
+            progressBar();
+            getAllCertificatesFromUser();
+            //setUser();
         }
         if (requestCode == 30) {
-            Log.d("XYZ", "new certificate view");
+            Log.d("RESULT", "new certificate view");
+            certificates.clear();
+            progressBar();
+            getAllCertificatesFromUser();
         }
     }
 
@@ -284,8 +344,8 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 Collections.sort(certificates, new Comparator<Certificate>() {
                     @Override
                     public int compare(Certificate o1, Certificate o2) {
-                        SimpleDateFormat formatter1 = new SimpleDateFormat("dd MMM yyyy");
-                        SimpleDateFormat formatter2 = new SimpleDateFormat("dd MMM yyyy");
+                        SimpleDateFormat formatter1 = new SimpleDateFormat("dd/mm/yyyy");
+                        SimpleDateFormat formatter2 = new SimpleDateFormat("dd/mm/yyyy");
                         Date date1 = null;
                         Date date2 = null;
                         try {
@@ -309,5 +369,18 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         Log.d("SORT", "NOTHING");
+    }
+
+    private void progressBar(){
+        Log.d("TAG","ProgressBar?");
+        dialog = new ProgressDialog(CertificateListActivity.this);
+        dialog.show();
+        dialog.setContentView(R.layout.progress_loading_certificates);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
+    private void getImageForUser()
+    {
+        new DownloadImageTask((ImageView) profilePic).execute(user.getmImage());
     }
 }
