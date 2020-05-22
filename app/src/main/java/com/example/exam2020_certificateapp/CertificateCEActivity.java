@@ -127,8 +127,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         View view = getWindow().getDecorView();
         view.setOnTouchListener(new OnSwipeListener(this) {
             @Override
-            public void onSwipeRight() {
-                Log.d("SWIPE", "RIGHT");
+            public void onSwipeLeft() {
+                Log.d("SWIPE", "LEFT");
                 promptForSaveSettings();
             }
         });

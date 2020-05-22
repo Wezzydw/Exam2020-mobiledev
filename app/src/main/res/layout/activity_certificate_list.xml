@@ -63,18 +63,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:background="@android:drawable/ic_input_add" />
+
     <ListView
         android:id="@+id/listCertificates"
         android:layout_width="match_parent"
-        android:layout_height="518dp">
+        android:layout_height="match_parent">
 
     </ListView>
 
-
-
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </LinearLayout>

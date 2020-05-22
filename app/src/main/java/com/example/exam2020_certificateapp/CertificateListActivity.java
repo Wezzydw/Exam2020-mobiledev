@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -25,6 +26,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.exam2020_certificateapp.helpers.DownloadImageTask;
 import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.model.Certificate;
 import com.example.exam2020_certificateapp.model.User;
@@ -71,14 +73,15 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     private EditText mTxtSearch;
     private String mCurrentSearchString = "";
     private int index = -1;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_list);
-        viewPager = findViewById(R.id.viewpager);
-        certificateAdapter = new CertificateAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(certificateAdapter);
+        //viewPager = findViewById(R.id.viewpager);
+        //certificateAdapter = new CertificateAdapter(getSupportFragmentManager());
+        //viewPager.setAdapter(certificateAdapter);
         mPhotoHolder = PhotoHolder.getInstance();
         mDb = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -89,6 +92,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         spinner = findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
         lv = findViewById(R.id.listCertificates);
+
         profilePic = findViewById(R.id.imageUser);
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +100,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 redirectToSettings();
             }
         });
+        getImageForUser();
         mTxtSearch = findViewById(R.id.certListTXTSearch);
         mTxtSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -124,6 +129,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
             }
         });
         getAllCertificatesFromUser();
+        progressBar();
     }
 
     private void getAllCertificatesFromUser() {
@@ -154,6 +160,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                                 Log.d("SETUP", "Downlaod is complete");
                                 if(size == index)
                                 {
+                                    dialog.dismiss();
                                     Log.d("SETUP", "size("+size+") == index("+index+") ");
                                     setupListView();
                                 }
@@ -230,7 +237,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     }*/
 
     private void setupListView() {
-        Log.d("SETUP", "IN LIST VIEW");
+        Log.d("RESULT", "IN LIST VIEW");
         if (certificates != null|| certificates.isEmpty()) {
             //Sort list
             final ArrayList<Certificate> sortCertificates = new ArrayList<>();
@@ -256,7 +263,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                     Intent intent = new Intent(view.getContext(), CertificateCEActivity.class);
                     Certificate cert = sortCertificates.get(position);
                     //cert.setCurrentBitmap(null);
-                    Log.d("XYZ", cert.getmName() + cert.getmExpirationDate());
+                    Log.d("RESULT", cert.getmName() + cert.getmExpirationDate());
                     intent.putExtra("cert", cert);
                     intent.putExtra("position", position);
 
@@ -286,7 +293,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("XYZ", "onResult resultCode = " + resultCode);
+        Log.d("RESULT", "onResult resultCode = " + resultCode);
         if (requestCode == 10) {
             if (resultCode == RESULT_OK) {
                 User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
@@ -303,13 +310,17 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         }
 
         if (requestCode == 20) {
-            Log.d("XYZ", "detail view");
+            Log.d("RESULT", "detail view");
             certificates.clear();
+            progressBar();
             getAllCertificatesFromUser();
             //setUser();
         }
         if (requestCode == 30) {
-            Log.d("XYZ", "new certificate view");
+            Log.d("RESULT", "new certificate view");
+            certificates.clear();
+            progressBar();
+            getAllCertificatesFromUser();
         }
     }
 
@@ -358,5 +369,18 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         Log.d("SORT", "NOTHING");
+    }
+
+    private void progressBar(){
+        Log.d("TAG","ProgressBar?");
+        dialog = new ProgressDialog(CertificateListActivity.this);
+        dialog.show();
+        dialog.setContentView(R.layout.progress_loading_certificates);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
+    private void getImageForUser()
+    {
+        new DownloadImageTask((ImageView) profilePic).execute(user.getmImage());
     }
 }
