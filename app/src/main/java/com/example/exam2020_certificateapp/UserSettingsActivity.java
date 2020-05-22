@@ -26,9 +26,13 @@ import com.example.exam2020_certificateapp.helpers.UploadCallBack;
 import com.example.exam2020_certificateapp.model.User;
 
 import com.example.exam2020_certificateapp.swipe.OnSwipeListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -58,7 +62,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     User mUser;
     String mCurrentPhotoPath = "";
     Uri mCurrentImageUri;
-
+    private FirebaseAuth mAuth;
     int MY_PERMISSIONS_REQUEST_CAMERA;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
     int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
@@ -74,7 +78,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_settings);
-
+        mAuth = FirebaseAuth.getInstance();
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
@@ -128,8 +132,8 @@ public class UserSettingsActivity extends AppCompatActivity {
         View view = getWindow().getDecorView();
         view.setOnTouchListener(new OnSwipeListener(this) {
             @Override
-            public void onSwipeRight() {
-                Log.d("SWIPE", "RIGHT");
+            public void onSwipeLeft() {
+                Log.d("SWIPE", "LEFT");
                 promptForSaveSettings();
             }
         });
@@ -141,7 +145,11 @@ public class UserSettingsActivity extends AppCompatActivity {
         mEditTextPassword.setText("");
         mEditTextPhone.setText(mUser.getmPhone());
         mEditTextUsername.setText(mUser.getmUserName());
-        new DownloadImageTask((ImageView) mImageViewProfilePicture).execute(mUser.getmImage());
+        if(mUser.getmImage() != null)
+        {
+            new DownloadImageTask((ImageView) mImageViewProfilePicture).execute(mUser.getmImage());
+        }
+
     }
 
 
@@ -185,7 +193,6 @@ public class UserSettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fireBaseDeleteAccount();
-                finish();
                 dialog.dismiss();
             }
         });
@@ -200,24 +207,17 @@ public class UserSettingsActivity extends AppCompatActivity {
     }
 
     void fireBaseDeleteAccount() {
-        Log.d("XYZ", mUser.getmUId());
-        mDb.document("users/" + mUser.getmUId()).delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("XYZ", "DocumentSnapshot successfully deleted!");
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent);
-                        //destroy or make it so you can't get back in with the back button before you log in again.
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("XYZ", "Error deleting document", e);
-                    }
-                });
-        //Delete certificates with functions
+        //delete from auth
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Intent result = new Intent();
+                result.putExtra("delete", true);
+                setResult(RESULT_OK, result);
+                finish();
+            }
+        });
     }
 
 

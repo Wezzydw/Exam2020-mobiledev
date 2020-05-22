@@ -100,7 +100,11 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 redirectToSettings();
             }
         });
-        getImageForUser();
+        if(user.getmImage() != null)
+        {
+            getImageForUser();
+        }
+
         mTxtSearch = findViewById(R.id.certListTXTSearch);
         mTxtSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -140,6 +144,10 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 if(task.isSuccessful()) {
                     index = 0;
                     final int size = task.getResult().size();
+                    if(size == 0)
+                    {
+                        dialog.dismiss();
+                    }
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                         Log.d("SETUP", "In task.getReuslt");
                         final Certificate tempCert = documentSnapshot.toObject(Certificate.class);
@@ -296,16 +304,25 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         Log.d("RESULT", "onResult resultCode = " + resultCode);
         if (requestCode == 10) {
             if (resultCode == RESULT_OK) {
-                User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
-                user = updatedUser;
+                if(data.getExtras().get("delete")!= null && data.getExtras().get("delete").equals(true))
+                {
+                    Log.d("LOGOUT", "Is set to deleted");
+                    finish();
+                }
+                else {
+                    User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
+                    user = updatedUser;
+                    getImageForUser();
+                }
+
                 //setUser();
 
-                PhotoHolder photoHolder = PhotoHolder.getInstance();
+                /*PhotoHolder photoHolder = PhotoHolder.getInstance();
                 byte[] byteArray = (byte[]) photoHolder.getExtra("profilePic");
                 if (byteArray != null) {
                     Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                     profilePic.setImageBitmap(bm);
-                }
+                }*/
             }
         }
 
