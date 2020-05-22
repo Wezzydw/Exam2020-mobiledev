@@ -65,6 +65,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     private FirebaseAuth mAuth;
     FirebaseStorage storage;
     StorageReference storageReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +81,14 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         storageReference = storage.getReference();
 
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
+
+        Button mBtnDelete = findViewById(R.id.cceBtnDelete);
+        mBtnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteCertificate();
+            }
+        });
 
         Button mBtnTakePicture = findViewById(R.id.cceBtnTakePic);
         mBtnTakePicture.setOnClickListener(new View.OnClickListener() {
@@ -350,5 +359,15 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     @Override
     public void onBackPressed() {
         promptForSaveSettings();
+    }
+
+    private void deleteCertificate() {
+        mDb.collection("certificates").document(mCert.getmUId()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d("Delete", "Deleted certificate");
+                finish();
+            }
+        });
     }
 }

@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
         //AUTO LOGIN//
         //AUTO LOGIN//
-        getEmail.setText("e@e.ee");
-        getPassword.setText("123456");
+        getEmail.setText("a@hotmail.com");
+        getPassword.setText("12345678");
 
 
         final String email = getEmail.getText().toString();

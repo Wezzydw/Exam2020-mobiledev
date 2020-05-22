@@ -107,5 +107,11 @@
         android:background="@drawable/buttondesign"
         />
 
+    <Button
+        android:id="@+id/cceBtnDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete" />
+
 
 </LinearLayout>
