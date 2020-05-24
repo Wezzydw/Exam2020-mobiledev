@@ -11,15 +11,30 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.exam2020_certificateapp.swipe.NewsAdapter;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.Key;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 public class NewsActivity extends AppCompatActivity {
 
@@ -46,43 +61,40 @@ public class NewsActivity extends AppCompatActivity {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                URL restapi = null;
                 try {
-                    restapi = new URL("https://api.github.com/");
-                } catch (MalformedURLException e) {
-                    Log.d("RESTAPI", "Error in url");
-                    e.printStackTrace();
-                }
-                HttpsURLConnection connection = null;
-                try {
+                    CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                    InputStream caInput = new BufferedInputStream(new FileInputStream("certifcate_der.crt"));
+                    Certificate ca;
+                    ca = cf.generateCertificate(caInput);
+                    System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+
+                    String keyStoreType = KeyStore.getDefaultType();
+                    KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+                    keyStore.setCertificateEntry("ca", ca);
+
+                    String tmfAlgo = TrustManagerFactory.getDefaultAlgorithm();
+                    TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgo);
+                    tmf.init(keyStore);
+
+                    SSLContext context = SSLContext.getInstance("TLS");
+                    context.init(null, tmf.getTrustManagers(), null);
+
+                    URL restapi = null;
+                    restapi = new URL("https://192.168.0.111:5001");
+                    HttpsURLConnection connection = null;
+
                     connection = (HttpsURLConnection) restapi.openConnection();
-                } catch (IOException e) {
-                    Log.d("RESTAPI", "Error in connection");
-                    e.printStackTrace();
-                }
-                try {
+                    connection.setSSLSocketFactory(context.getSocketFactory());
+
                     if(connection.getResponseCode() == 200)
                     {
                     } else {
                     }
-                } catch (IOException e) {
-                    Log.d("RESTAPI", "Error in response ");
-                    e.printStackTrace();
-                }
-                InputStream responseBody = null;
-                try {
+                    InputStream responseBody = null;
+                    InputStreamReader responseBodyReader = null;
                     responseBody = connection.getInputStream();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                InputStreamReader responseBodyReader = null;
-                try {
                     responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                JsonReader jsonReader = new JsonReader(responseBodyReader);
-                try {
+                    JsonReader jsonReader = new JsonReader(responseBodyReader);
                     jsonReader.beginObject();
                     while (jsonReader.hasNext())
                     {
@@ -98,6 +110,9 @@ public class NewsActivity extends AppCompatActivity {
                         Log.d("RESTAPI", a);
                     }
                     Log.d("RESTAPI", l.size()+"");
+
+                } catch (CertificateException | FileNotFoundException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException | MalformedURLException e) {
+                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
