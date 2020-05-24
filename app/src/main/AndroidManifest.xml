@@ -18,6 +18,7 @@
         android:theme="@style/AppTheme">
 
 
+        <activity android:name=".NewsActivity"></activity>
         <activity android:name=".CertificateCEActivity"></activity>
         <activity android:name=".CertificateListActivity"></activity>
         <activity android:name=".UserSettingsActivity"></activity>

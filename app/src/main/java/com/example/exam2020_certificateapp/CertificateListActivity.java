@@ -75,6 +75,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     private int index = -1;
     private ProgressDialog dialog;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +124,16 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
 
             }
         });
+        Button buttonNews = findViewById(R.id.certlistBtnNews);
+        buttonNews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), NewsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         Button buttonAdd = findViewById(R.id.buttonAdd);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
