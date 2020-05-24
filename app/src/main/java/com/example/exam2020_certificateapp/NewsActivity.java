@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Key;
@@ -62,14 +63,16 @@ public class NewsActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                    InputStream caInput = new BufferedInputStream(new FileInputStream("certifcate_der.crt"));
+                    /*CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                    InputStream caInput = getAssets().open("certificate_der.crt");
+                    //InputStream caInput = new BufferedInputStream(new FileInputStream(getAssets().open("certifcate_der.crt")));
                     Certificate ca;
                     ca = cf.generateCertificate(caInput);
                     System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
 
                     String keyStoreType = KeyStore.getDefaultType();
                     KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+                    keyStore.load(null, null);
                     keyStore.setCertificateEntry("ca", ca);
 
                     String tmfAlgo = TrustManagerFactory.getDefaultAlgorithm();
@@ -78,13 +81,13 @@ public class NewsActivity extends AppCompatActivity {
 
                     SSLContext context = SSLContext.getInstance("TLS");
                     context.init(null, tmf.getTrustManagers(), null);
-
+*/
                     URL restapi = null;
-                    restapi = new URL("https://192.168.0.111:5001");
-                    HttpsURLConnection connection = null;
+                    restapi = new URL("http://192.168.0.111:5000/api/news");
+                    HttpURLConnection connection = null;
 
-                    connection = (HttpsURLConnection) restapi.openConnection();
-                    connection.setSSLSocketFactory(context.getSocketFactory());
+                    connection = (HttpURLConnection) restapi.openConnection();
+                    //connection.setSSLSocketFactory(context.getSocketFactory());
 
                     if(connection.getResponseCode() == 200)
                     {
@@ -111,7 +114,7 @@ public class NewsActivity extends AppCompatActivity {
                     }
                     Log.d("RESTAPI", l.size()+"");
 
-                } catch (CertificateException | FileNotFoundException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException | MalformedURLException e) {
+                } catch ( FileNotFoundException |    MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
