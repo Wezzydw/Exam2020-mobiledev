@@ -57,12 +57,30 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonAdd"
-        android:layout_width="75dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:background="@android:drawable/ic_input_add" />
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/ic_input_add" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/certlistBtnNews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/ic_menu_today"
+            android:text="News" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/listCertificates"
