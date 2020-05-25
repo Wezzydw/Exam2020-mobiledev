@@ -145,9 +145,9 @@ public class UserSettingsActivity extends AppCompatActivity {
         mEditTextPassword.setText("");
         mEditTextPhone.setText(mUser.getmPhone());
         mEditTextUsername.setText(mUser.getmUserName());
-        if(mUser.getmImage() != null)
+        if(mUser.getmImageUrl() != null)
         {
-            new DownloadImageTask((ImageView) mImageViewProfilePicture).execute(mUser.getmImage());
+            new DownloadImageTask((ImageView) mImageViewProfilePicture).execute(mUser.getmImageUrl());
         }
 
     }
@@ -229,7 +229,7 @@ public class UserSettingsActivity extends AppCompatActivity {
         user.setmUserName(mEditTextUsername.getText().toString());
         user.setmCertificateList(mUser.getmCertificateList());
         user.setmPhone(mEditTextPhone.getText().toString());
-        user.setImage(mUser.getmImage());
+        user.setmImageUrl(mUser.getmImageUrl());
         user.setmUId(mUser.getmUId());
         String path = "images/" + mUser.getmUId() + "/profilePicture";
 
@@ -242,14 +242,14 @@ public class UserSettingsActivity extends AppCompatActivity {
                         public void onSuccess(Uri uri) {
                             //user.setImage(uri.);
                             Log.d("XYZAY", uri.toString());
-                            user.setImage(uri.toString());
+                            user.setmImageUrl(uri.toString());
                             mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     // photo helper breaks the app, I think it is because the toast you put in the activity and it switches activity too fast
                                     Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
                                     succesSaving.show();
-                                    Log.d("XYZA", user.getmImage());
+                                    Log.d("XYZA", user.getmImageUrl());
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override

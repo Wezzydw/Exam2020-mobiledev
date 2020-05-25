@@ -101,7 +101,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 redirectToSettings();
             }
         });
-        if(user.getmImage() != null)
+        if(user.getmImageUrl() != null)
         {
             getImageForUser();
         }
@@ -409,6 +409,6 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
 
     private void getImageForUser()
     {
-        new DownloadImageTask((ImageView) profilePic).execute(user.getmImage());
+        new DownloadImageTask((ImageView) profilePic).execute(user.getmImageUrl());
     }
 }

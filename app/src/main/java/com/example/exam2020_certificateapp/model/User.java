@@ -11,7 +11,7 @@ public class User implements Serializable {
     private String mUId;
     private String mName;
     private String mPhone;
-    private String mImage;
+    private String mImageUrl;
     private List<String> mCertificateList;
 
     public User() {
@@ -23,20 +23,19 @@ public class User implements Serializable {
         mEmail = email;
         mUId = uId;
         mUserName = userName;
-        mImage = null;
+        mImageUrl = null;
     }
 
-    public void setImage(String image) {
-        mImage = image;
+    public String getmImageUrl() {
+        return mImageUrl;
     }
 
+    public void setmImageUrl(String mImageUrl) {
+        this.mImageUrl = mImageUrl;
+    }
 
     public String getmUId() {
         return mUId;
-    }
-
-    public String getmImage() {
-        return mImage;
     }
 
     public String getmEmail() {
@@ -83,7 +82,4 @@ public class User implements Serializable {
         this.mPhone = mPhone;
     }
 
-    public void setmImage(String mImage) {
-        this.mImage = mImage;
-    }
 }

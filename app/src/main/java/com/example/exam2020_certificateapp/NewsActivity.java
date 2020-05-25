@@ -116,7 +116,7 @@ public class NewsActivity extends AppCompatActivity {
                     List<News> tempList = readNewsArray(jsonReader);
                     connection.disconnect();
                     for (News a : tempList) {
-                        Log.d("RESTAPI", a.getNewsText() + " Id: " + a.getId());
+                        Log.d("RESTAPI", a.getTitle() + " Id: " + a.getId());
                         //l.add(a.getNewsText());
                     }
                     //l.add(tempList.get(0).getNewsText());
@@ -164,8 +164,10 @@ public class NewsActivity extends AppCompatActivity {
             String name = jsonReader.nextName();
             if(name.equals("id")){
                 news.setId(jsonReader.nextInt());
-            } else if( name.equals("newsText")){
-                news.setNewsText(jsonReader.nextString());
+            } else if( name.equals("title")){
+                news.setTitle(jsonReader.nextString());
+            } else if(name.equals("url")){
+                news.setUrl(jsonReader.nextString());
             }
         }
         jsonReader.endObject();

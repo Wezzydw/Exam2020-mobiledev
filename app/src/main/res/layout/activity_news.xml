@@ -8,13 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/newsTxtTester"
-            android:layout_width="65dp"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="Name" />
     </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager
