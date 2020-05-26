@@ -12,47 +12,43 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-
-import com.example.exam2020_certificateapp.UserSettingsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 public class PhotoHelper {
-    Context mCont;
-    Activity mActivity;
-    PackageManager mPackageManager;
+    Context mCont; //Context from the class that creates an instance of this
+    Activity mActivity; //Activity from the class that creates an instance of this
+    PackageManager mPackageManager; // Packagemanager from the class that creates an instance of this
     int MY_PERMISSIONS_REQUEST_CAMERA;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
     int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_UPLOAD = 2;
-    StorageReference storageReference;
-    FirebaseStorage storage;
-    //
-    // -1 = error
-    // 0 = false
-    // 1 = true
-    private int mIsDoneUploading = 0;
-    //
+    StorageReference storageReference; //Firebase storage reference
+    FirebaseStorage storage; //Firebase storage
+    String mCurrentPhotoPath = ""; //String of the current photo path
 
-    String mCurrentPhotoPath = "";
+    /**
+     * Constructor for photohelper that uses the Context, Activity and package manager from what
+     * ever activity that creates an instance of this
+     * @param cont
+     * @param activity
+     * @param packageManager
+     */
     public PhotoHelper(Context cont, Activity activity, PackageManager packageManager) {
         mCont = cont;
         mActivity = activity;
@@ -61,6 +57,13 @@ public class PhotoHelper {
         storageReference = storage.getReference();
     }
 
+    /**
+     * Checks for permissions needed to use photohelper
+     * Should be called at least once whenever the first method is used to ask the user for permissions
+     * However some methods in Photo Helper calls check permission as a safety net in case if it not being used
+     * @return true if all permissions are already granted. If at least permission is missing,
+     * it will return false, and ask the user for permission
+     */
     public boolean checkPermissions() {
         if (ContextCompat.checkSelfPermission(mCont, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             //Ask permission
@@ -69,31 +72,33 @@ public class PhotoHelper {
         }
         if(ContextCompat.checkSelfPermission(mCont, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
+            //Ask permission
             ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             return false;
         }
         if (ContextCompat.checkSelfPermission(mCont, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //Ask permission
             ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-
             return false;
         }
         return true;
     }
 
-
-    public Bitmap getBitmap(Uri uri) {
-        try {
+    /**
+     * Gets a bitmap from the given uri
+     * @param uri
+     * @return bitmap
+     * @throws FileNotFoundException if the file is not found
+     */
+    public Bitmap getBitmap(Uri uri) throws FileNotFoundException {
             InputStream imageStream = mActivity.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
             return bitmap;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
-
+    /**
+     * Opens the camera, if a picture is taken, saves it into an image file
+     */
     public void openCamera() {
         if(checkPermissions())
         {
@@ -116,7 +121,9 @@ public class PhotoHelper {
         }
         }
 
-
+    /**
+     * Opens the phones gallery app, and lets the user choose an image
+     */
     public void openGallery() {
 
             if(checkPermissions())
@@ -124,24 +131,31 @@ public class PhotoHelper {
                 Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 mActivity.startActivityForResult(galleryIntent, REQUEST_IMAGE_UPLOAD);
             }
-
-
     }
 
-    public File createImageFile() throws IOException {
+    /**
+     *  Creates an image with a timestamp in its name. Then saves the image path in mCurrentPhotoPath
+     * @return the image file created
+     * @throws IOException if the file fails to create
+     */
+    private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyymmdd_HHmmss").format(new Date());
         String imageFileName = "Certificate_" + timeStamp + "_";
         File storageDir = mActivity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-
         mCurrentPhotoPath = image.getAbsolutePath();
-
         return image;
     }
 
-
-    public void uploadImageToFirebase(Uri filepath, String path, final UploadCallBack callBack) { //String path instead of UUID so we can choose where the image gets saved
-
+    /**
+     * Uploads an image from the given filepath(Uri) to the firebase storagereference with the path
+     * It takes a callback to let the program know when the task is done
+     * While uploading it will use a progress dialog to let the user know how far along the process is
+     * @param filepath
+     * @param path
+     * @param callBack
+     */
+    public void uploadImageToFirebase(Uri filepath, String path, final UploadCallBack callBack) {
         final ProgressDialog progressDialog = new ProgressDialog(mCont);
         progressDialog.setTitle("Uploading");
         progressDialog.show();
@@ -174,9 +188,11 @@ public class PhotoHelper {
 
     }
 
+    /**
+     * Get the current photo path
+     * @return current photo path
+     */
     public String getmCurrentPhotoPath() {
         return mCurrentPhotoPath;
     }
-
-
 }
