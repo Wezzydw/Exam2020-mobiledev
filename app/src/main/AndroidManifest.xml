@@ -23,7 +23,7 @@
         <activity android:name=".CertificateListActivity"></activity>
         <activity android:name=".UserSettingsActivity"></activity>
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -113,6 +113,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     /**
      * takes mUser data and attach it to text fields and profilepicture
      */
+
     void initializeDisplayOfData() {
         mEditTextEmail.setText(mUser.getmEmail());
         mEditTextName.setText(mUser.getmName());
