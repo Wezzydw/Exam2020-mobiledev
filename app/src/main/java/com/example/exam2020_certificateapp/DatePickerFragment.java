@@ -11,6 +11,15 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Calendar;
 
 public class DatePickerFragment extends DialogFragment {
+
+    /**
+     * Creates a DatePickerDialog for a user to choose an expiration date.
+     * The savedInstanceState represents state of the DatePicker.
+     * The state is null on creation, and then saves data to the Bundle.
+     * Can never return null.
+     * @param savedInstanceState the state of the DatePicker, when last modified.
+     * @return Selected date in the DatePicker.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
