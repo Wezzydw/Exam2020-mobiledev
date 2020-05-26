@@ -73,7 +73,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mPhotoHolder = PhotoHolder.getInstance();
         mImageView = findViewById(R.id.cceImageView);
         mDb = FirebaseFirestore.getInstance();
-        dateText = (TextView) findViewById(R.id.cceTWDate);
+        dateText = findViewById(R.id.cceTWDate);
         mCert = (Certificate) getIntent().getSerializableExtra("cert");
         mTextCertName = findViewById(R.id.cceETCertName);
         mAuth = FirebaseAuth.getInstance();
@@ -82,6 +82,23 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
 
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
 
+        initializeButtons();
+
+        View view = getWindow().getDecorView();
+        view.setOnTouchListener(new OnSwipeListener(this) {
+            @Override
+            public void onSwipeLeft() {
+                Log.d("SWIPE", "LEFT");
+                promptForSaveSettings();
+            }
+        });
+
+    }
+
+    /**
+     * Initializes buttons and their onClicklisteners
+     */
+    private void initializeButtons() {
         Button mBtnDelete = findViewById(R.id.cceBtnDelete);
         mBtnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,11 +118,11 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
 
         Button mBtnPictureFromPhone = findViewById(R.id.cceBtnPicFromLib);
         mBtnPictureFromPhone.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View v) {
-                                                   mPhotoHelper.openGallery();
-                                               }
-                                           }
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        mPhotoHelper.openGallery();
+                                                    }
+                                                }
         );
         Button mBtnSave = findViewById(R.id.cceBtnSave);
         mBtnSave.setOnClickListener(new View.OnClickListener() {
@@ -123,8 +140,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 datePicker.show(getSupportFragmentManager(), "date picker");
             }
         });
-
-
         if(mCert != null)
         {
             initializeDisplayOfData();
@@ -133,38 +148,38 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         else {
             mBtnSave.setText("Create new Certificate");
         }
-        View view = getWindow().getDecorView();
-        view.setOnTouchListener(new OnSwipeListener(this) {
-            @Override
-            public void onSwipeLeft() {
-                Log.d("SWIPE", "LEFT");
-                promptForSaveSettings();
-            }
-        });
-
     }
 
+    /**
+     * When called, creates a fresh certificate and fills it with data.
+     * Specific data depends on what "state" the activity is in either Create or Update
+     *
+     */
     private void save() {
         final String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/";
         final Certificate certificate;
+        //If the activity has entered as update
         if (mCert != null) {
-            Log.d("FASTER", "In not null");
             certificate = mCert;
-        } else {
-            Log.d("FASTER", "In else");
+        }
+        // The Activity has entered as Create New
+        else {
             certificate = new Certificate();
             certificate.setmUId(UUID.randomUUID().toString());
             certificate.setmUserUid(mAuth.getCurrentUser().getUid());
         }
-        Log.d("FASTER", certificate.getmUId());
+
         certificate.setmExpirationDate(dateText.getText().toString());
         certificate.setmExpirationDate(dateText.getText().toString());
         certificate.setmName(mTextCertName.getText().toString());
+        //If an image has been chosen, then it uploads that to the database
         if (mCurrentImageUri != null) {
             mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + certificate.getmUId(), new UploadCallBack() {
+                //Uses an onCallback class to ensure that the image is uploaded before the code proceeds
                 @Override
                 public void onCallback(boolean state) {
                     if (state == true) {
+                        //Then gets the url for the newly uploaded image
                         storageReference.child("images/" + certificate.getmUserUid() + "/certificates/" + certificate.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
@@ -181,15 +196,18 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         }
     }
 
+    /**
+     * Takes a certificate and saves that in the database
+     * @param certificate
+     */
     void saveInFirebase(final Certificate certificate) {
         mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 mPhotoHolder.putExtra(certificate.getmUId(), certificate);
-                Log.d("FASTER", certificate.getmName());
+                Toast successSaving = Toast.makeText(CertificateCEActivity.this, "Successfully Saved Changes", Toast.LENGTH_LONG);
+                successSaving.show();
                 finish();
-                Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                succesSaving.show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -200,99 +218,10 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         });
     }
 
-    void oldsave() {
-        //
-        //mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, UUID.randomUUID());
-        //
-        final String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/";
-        final Certificate certificate;
-        if(mCert != null) {
-            certificate = mCert;
-
-            mCert.setmUserUid(mAuth.getCurrentUser().getUid());
-            Log.d("XYZ", "User ID ==" + mCert.getmUserUid());
-            mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + mCert.getmUId(), new UploadCallBack() {
-                @Override
-                public void onCallback(boolean state) {
-                    if (state == true)
-                    {
-                        storageReference.child("images/" + mCert.getmUserUid() + "/certificates/" + mCert.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                mCert.setmPhoto(uri.toString());
-                                mDb.document("certificates/" + mCert.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        mPhotoHolder.putExtra(mCert.getmUId(), mCert);
-                                        Log.d("XYZ", "nu sker der noget hmmm" + mAuth.getUid() + "==" + mCert.getmUId());
-                                        Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                                        succesSaving.show();
-                                        finish();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
-                                        errorSavingChanges.show();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                }
-            });
-
-
-        } else {
-            if(mBitmap!=null){
-                certificate = new Certificate( dateText.getText().toString(), mTextCertName.getText().toString());
-                // certificate.setmBitmap(mBitmap);
-                certificate.setmUId(UUID.randomUUID().toString());
-                // mDb.collection("users").document(mAuth.getUid()).update("mCertificateList", certificate);
-
-                certificate.setmUserUid(mAuth.getCurrentUser().getUid());
-                Log.d("XYZ", "User ID ==" + mAuth.getCurrentUser().getUid());
-                mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + certificate.getmUId(), new UploadCallBack() {
-                    @Override
-                    public void onCallback(boolean state) {
-                        if (state == true)
-                        {
-                            storageReference.child("images/" + certificate.getmUserUid() + "/certificates/" + certificate.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    certificate.setmPhoto(uri.toString());
-                                    mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/" + UUID.randomUUID();
-                                            Log.d("XYZ", "nu sker der noget" + mAuth.getUid() + "==" + certificate.getmUId());
-                                            mDb.document("users/" + mAuth.getUid()).update("mCertificateList", FieldValue.arrayUnion(certificate.getmUId())).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    mPhotoHolder.putExtra(certificate.getmUId(), certificate);
-                                                    mPhotoHolder.putExtra("bitmap"+certificate.getmUId(), mBitmap);
-                                                    finish();
-                                                    Toast succesSaving = Toast.makeText(CertificateCEActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                                                    succesSaving.show();
-                                                }
-                                            });
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast errorSavingChanges = Toast.makeText(CertificateCEActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
-                                            errorSavingChanges.show();
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        }
-    }
-
+    /**
+     * Makes a popup when trying to leave the activity, which asks for whether
+     * or not the user wants to save the data changes
+     */
     void promptForSaveSettings() {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Savesettings");
@@ -300,7 +229,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Log.e("XYZ", "Never finishing");
                     dialog.dismiss();
                     save();
                 }
@@ -316,18 +244,28 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             alert.show();
     }
 
+    /**
+     *  Sets up the display of data for the textfields and imageview
+     */
     void initializeDisplayOfData(){
-        Calendar c = Calendar.getInstance();
-        //use real data here
-        String expirationDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK).format(c.getTime());
-
-        //ved ikke lige helt hvad der skal gøres med expdate
         dateText.setText(mCert.getmExpirationDate());
         mTextCertName.setText(mCert.getmName());
-        mImageView.setImageBitmap((Bitmap) mPhotoHolder.getExtra("bitmap"+mCert.getmUId()));
-        //new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
+        //mImageView.setImageBitmap((Bitmap) mPhotoHolder.getExtra("bitmap"+mCert.getmUId()));
+        //checks whether the certificate has an image or not, before trying to download the image
+        if(mCert.getmPhoto() != null)
+        {
+            new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
+        }
+
     }
 
+    /**
+     * When using the datepicker, upon choosing a date, this method is revoked
+     * @param view
+     * @param year
+     * @param month
+     * @param dayOfMonth
+     */
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Calendar c = Calendar.getInstance();
@@ -335,37 +273,49 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String expirationDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK).format(c.getTime());
-
-
         dateText.setText(expirationDate);
     }
 
+    /**
+     * Whenever an activity finishes this method is called
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Uri uri = null;
+        // if the image comes from the camera directly
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             uri = Uri.fromFile(new File(mPhotoHelper.getmCurrentPhotoPath()));
         } else if (requestCode == REQUEST_IMAGE_UPLOAD && resultCode == RESULT_OK) {
             //takes Image from storage/SD
             uri = data.getData();
         }
+        // Checks uri and sets the bitmap for displaying the new image
         if(uri != null) {
             mCurrentImageUri = uri;
             mBitmap = mPhotoHelper.getBitmap(uri);
             mImageView.setImageBitmap(mBitmap);
-
         }
     }
+
+    /**
+     * Overrides the method for the back button, to prompt the user a change to save changes
+     */
     @Override
     public void onBackPressed() {
         promptForSaveSettings();
     }
 
+    /**
+     * Deletes the currently selected certificate
+     * and then finishes this activity
+     */
     private void deleteCertificate() {
         mDb.collection("certificates").document(mCert.getmUId()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                Log.d("Delete", "Deleted certificate");
                 finish();
             }
         });
