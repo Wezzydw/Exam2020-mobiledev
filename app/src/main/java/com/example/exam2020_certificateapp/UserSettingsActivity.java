@@ -233,7 +233,7 @@ public class UserSettingsActivity extends AppCompatActivity {
         user.setmImageUrl(mUser.getmImageUrl());
         user.setmUId(mUser.getmUId());
         String path = "images/" + mUser.getmUId() + "/profilePicture";
-
+//fix som i certifcvate ce
         mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
             @Override
             public void onCallback(boolean state) {
