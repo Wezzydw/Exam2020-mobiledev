@@ -249,8 +249,9 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     }
 
     /**
-     * Whenever the spinner for sorting is used, this method is called
-     *
+     * Whenever the spinner for sorting is used, this method is called, where position is used to
+     * determine which sorting method is used
+     * Parent, view and id is currently not used
      * @param parent
      * @param view
      * @param position
@@ -270,6 +271,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 setupListView();
                 break;
             case 1:
+                //Sort by date
                 Collections.sort(certificates, new Comparator<Certificate>() {
                     @Override
                     public int compare(Certificate o1, Certificate o2) {
@@ -295,11 +297,19 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         }
     }
 
+    /**
+     * If nothing is selected in spinner, this method is called,
+     * Parent is not used since we currently are not using this method, but is here
+     * because of us implementing the parent
+     * @param parent
+     */
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        Log.d("SORT", "NOTHING");
     }
 
+    /**
+     * Starts a dialog with a loading icon spinning until dialog.dismiss() is called
+     */
     private void progressBar() {
         dialog = new ProgressDialog(CertificateListActivity.this);
         dialog.show();
@@ -307,6 +317,9 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
     }
 
+    /**
+     * Starts a new downloadtask that downloads an image to profilepic from users image url
+     */
     private void getImageForUser() {
         new DownloadImageTask((ImageView) profilePic).execute(user.getmImageUrl());
     }
