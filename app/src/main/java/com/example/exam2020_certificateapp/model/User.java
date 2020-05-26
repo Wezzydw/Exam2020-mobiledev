@@ -1,7 +1,6 @@
 package com.example.exam2020_certificateapp.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class User implements Serializable {
     private String mUserName;

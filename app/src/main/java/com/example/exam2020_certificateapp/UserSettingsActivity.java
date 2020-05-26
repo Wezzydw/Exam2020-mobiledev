@@ -29,6 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 public class UserSettingsActivity extends AppCompatActivity {
 
@@ -158,7 +159,12 @@ public class UserSettingsActivity extends AppCompatActivity {
         }
         if (uri != null) {
             mCurrentImageUri = uri;
-            Bitmap bitmap = mPhotoHelper.getBitmap(uri);
+            Bitmap bitmap = null;
+            try {
+                bitmap = mPhotoHelper.getBitmap(uri);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             mImageViewProfilePicture.setImageBitmap(bitmap);
         }
     }
@@ -214,7 +220,6 @@ public class UserSettingsActivity extends AppCompatActivity {
         user.setmEmail(mEditTextEmail.getText().toString());
         user.setmName(mEditTextName.getText().toString());
         user.setmUserName(mEditTextUsername.getText().toString());
-        user.setmCertificateList(mUser.getmCertificateList());
         user.setmPhone(mEditTextPhone.getText().toString());
         user.setmImageUrl(mUser.getmImageUrl());
         user.setmUId(mUser.getmUId());

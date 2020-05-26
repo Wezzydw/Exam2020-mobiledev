@@ -38,6 +38,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -286,7 +287,11 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         // Checks uri and sets the bitmap for displaying the new image
         if (uri != null) {
             mCurrentImageUri = uri;
-            mBitmap = mPhotoHelper.getBitmap(uri);
+            try {
+                mBitmap = mPhotoHelper.getBitmap(uri);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             mImageView.setImageBitmap(mBitmap);
         }
     }

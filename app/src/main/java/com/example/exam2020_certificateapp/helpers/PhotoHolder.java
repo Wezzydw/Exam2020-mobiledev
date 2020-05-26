@@ -7,12 +7,9 @@ public class PhotoHolder {
 
     private static PhotoHolder photoHelperInstance = new PhotoHolder();
     private Map<String, Object> data = new HashMap<>();
-
-
     public static PhotoHolder getInstance() {
         return photoHelperInstance;
     }
-
     public void putExtra(String name, Object object) {
         data.put(name, object);
     }
