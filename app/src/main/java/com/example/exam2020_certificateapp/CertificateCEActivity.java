@@ -52,7 +52,6 @@ import java.util.UUID;
 public class CertificateCEActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     PhotoHelper mPhotoHelper;
-    PhotoHolder mPhotoHolder;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_UPLOAD = 2;
     ImageView mImageView;
@@ -70,7 +69,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_certificate_c_e);
-        mPhotoHolder = PhotoHolder.getInstance();
         mImageView = findViewById(R.id.cceImageView);
         mDb = FirebaseFirestore.getInstance();
         dateText = findViewById(R.id.cceTWDate);
@@ -184,7 +182,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                             @Override
                             public void onSuccess(Uri uri) {
                                 certificate.setmPhoto(uri.toString());
-                                mPhotoHolder.putExtra("bitmap"+certificate.getmUId(), mBitmap);
                                 saveInFirebase(certificate);
                             }
                         });
@@ -204,7 +201,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mDb.collection("certificates").document(certificate.getmUId()).set(certificate).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                mPhotoHolder.putExtra(certificate.getmUId(), certificate);
                 Toast successSaving = Toast.makeText(CertificateCEActivity.this, "Successfully Saved Changes", Toast.LENGTH_LONG);
                 successSaving.show();
                 finish();
@@ -250,7 +246,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     void initializeDisplayOfData(){
         dateText.setText(mCert.getmExpirationDate());
         mTextCertName.setText(mCert.getmName());
-        //mImageView.setImageBitmap((Bitmap) mPhotoHolder.getExtra("bitmap"+mCert.getmUId()));
         //checks whether the certificate has an image or not, before trying to download the image
         if(mCert.getmPhoto() != null)
         {
