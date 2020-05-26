@@ -51,19 +51,20 @@ import java.util.UUID;
 
 public class CertificateCEActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
-    PhotoHelper mPhotoHelper;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_IMAGE_UPLOAD = 2;
-    ImageView mImageView;
-    private FirebaseFirestore mDb;
-    TextView dateText;
-    TextView mTextCertName;
-    Certificate mCert;
-    Bitmap mBitmap;
-    Uri mCurrentImageUri;
-    private FirebaseAuth mAuth;
-    FirebaseStorage storage;
-    StorageReference storageReference;
+
+    ImageView mImageView; //Imageview for certificate image
+    private FirebaseFirestore mDb; //Firestore database connection
+    TextView dateText; //Textview for date
+    TextView mTextCertName; //Textview for certificatename
+    Certificate mCert; //Placeholder for current selected certificate if updating certificate
+    Bitmap mBitmap; //Placeholder for bitmap of selected image from phone
+    Uri mCurrentImageUri; //Placeholder URI for currently selected image
+    private FirebaseAuth mAuth; //Firebase authentication connection
+    FirebaseStorage storage; //Firebase storage connection
+    StorageReference storageReference; //Reference for Firebase storage
+    PhotoHelper mPhotoHelper; //Reference to Photohelper class
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mDb = FirebaseFirestore.getInstance();
         dateText = findViewById(R.id.cceTWDate);
         mCert = (Certificate) getIntent().getSerializableExtra("cert");
-        Log.d("WTF", mCert.getmPhoto());
         mTextCertName = findViewById(R.id.cceETCertName);
         mAuth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -188,8 +188,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     }
 
     /**
-     * Takes a certificate and saves that in the database
-     *
+     * Takes certificate and saves that in firebase
      * @param certificate
      */
     void saveInFirebase(final Certificate certificate) {
@@ -242,7 +241,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         dateText.setText(mCert.getmExpirationDate());
         mTextCertName.setText(mCert.getmName());
         //checks whether the certificate has an image or not, before trying to download the image
-        Log.d("DTASK", mCert.getmPhoto());
         if (mCert.getmPhoto() != null) {
             new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
         }
@@ -250,8 +248,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     }
 
     /**
-     * When using the datepicker, upon choosing a date, this method is revoked
-     *
+     * When using the datepicker view, upon choosing a date, this method is revoked
+     * Then creates a string with the specified year, month and dayofmonth, which is attached to dateText
      * @param view
      * @param year
      * @param month
@@ -268,14 +266,15 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     }
 
     /**
-     * Whenever an activity finishes this method is called
-     *
+     * Whenever an activity finishes this method is called, then it uses requestcode to determine what view
+     * and if resultcode is RESULT_OK, then data can be used to retrieve information
      * @param requestCode
      * @param resultCode
      * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         Uri uri = null;
         // if the image comes from the camera directly
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
@@ -301,8 +300,8 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     }
 
     /**
-     * Deletes the currently selected certificate
-     * and then finishes this activity
+     * Deletes the currently selected certificate: mCert if applicable
+     * once completed finishes this activity
      */
     private void deleteCertificate() {
         mDb.collection("certificates").document(mCert.getmUId()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
