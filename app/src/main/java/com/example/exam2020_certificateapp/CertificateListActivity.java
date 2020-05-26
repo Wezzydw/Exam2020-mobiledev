@@ -98,7 +98,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         TextView textUserName = findViewById(R.id.textUserName);
         textUserName.setText(user.getmUserName());
         getAllCertificatesFromUser();
-        progressBar();
+
     }
 
     /**
@@ -134,6 +134,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
      * Call this method to download all certificates from logged in user
      */
     private void getAllCertificatesFromUser() {
+        progressBar();
         mDb.collection("certificates").whereEqualTo("mUserUid", user.getmUId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -150,7 +151,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                         //Downloads the image from the certificate
                         riversRef.getStream(new StreamDownloadTask.StreamProcessor() {
                             @Override
-                            public void doInBackground(@NonNull StreamDownloadTask.TaskSnapshot taskSnapshot, @NonNull InputStream inputStream) throws IOException {
+                            public void doInBackground(@NonNull StreamDownloadTask.TaskSnapshot taskSnapshot, @NonNull InputStream inputStream) {
                                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                 //Puts the downloaded image into photoholder for storage
                                 mPhotoHolder.putExtra("bitmap" +tempCert.getmUId(), bitmap);

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.JsonReader;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -19,11 +20,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewsActivity extends AppCompatActivity {
+    private final static int CONNECTION_TIMEOUT = 5000;
     private ViewPager viewPager; //Viewpager this displays our swipes
     private NewsAdapter newsAdapter; //Adapter this creates our pages for our viewpager
     private ProgressDialog dialog; //Loading dialog
@@ -35,6 +38,12 @@ public class NewsActivity extends AppCompatActivity {
             updateUI();
         }
     }; //Calls GUI Thread to ensure correct updates
+    private Runnable mCallToastError = new Runnable() {
+        @Override
+        public void run() {
+            toastError();
+        }
+    }; //Calls GUI Thread to ensure correct updates
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +52,6 @@ public class NewsActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.newsViewPager);
         newsAdapter = new NewsAdapter(getSupportFragmentManager(), listOfNews);
         viewPager.setAdapter(newsAdapter);
-        //progressBar();
         downloadNewsFromRestAPI();
     }
 
@@ -51,6 +59,7 @@ public class NewsActivity extends AppCompatActivity {
      * Initiates a download of news from RESTAPI which will be done from another thread
      */
     private void downloadNewsFromRestAPI() {
+        progressBar();
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -60,7 +69,7 @@ public class NewsActivity extends AppCompatActivity {
                     HttpURLConnection connection = null;
 
                     connection = (HttpURLConnection) restapi.openConnection();
-
+                    connection.setConnectTimeout(CONNECTION_TIMEOUT);
                     if(connection.getResponseCode() == 200)
                     {
                     } else {
@@ -74,10 +83,14 @@ public class NewsActivity extends AppCompatActivity {
                     connection.disconnect();
                     listOfNews.addAll(tempList);
                     mHandler.post(mUpdateResults);
-                } catch ( FileNotFoundException |    MalformedURLException e) {
+                } catch ( FileNotFoundException | MalformedURLException | SocketTimeoutException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
+                } finally {
+                    mHandler.post(mCallToastError);
+                    dialog.dismiss();
+                    finish();
                 }
             }
         });
@@ -98,7 +111,14 @@ public class NewsActivity extends AppCompatActivity {
      */
     private void updateUI() {
         newsAdapter.notifyDataSetChanged();
-        //dialog.dismiss();
+    }
+
+    /**
+     * Calls a toast that displays an error to user
+     */
+    private void toastError() {
+        Toast ErrorConnectingToRESTAPI = Toast.makeText(NewsActivity.this, "Error Connecting to Server", Toast.LENGTH_LONG);
+        ErrorConnectingToRESTAPI.show();
     }
 
     /**
