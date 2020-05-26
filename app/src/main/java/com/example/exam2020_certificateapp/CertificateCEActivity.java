@@ -77,16 +77,15 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mAuth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-
         mPhotoHelper = new PhotoHelper(this, this, getPackageManager());
 
         initializeButtons();
 
+        //Initializes the onSwipeListener and on swipeleft asks the user to save settings before leaving
         View view = getWindow().getDecorView();
         view.setOnTouchListener(new OnSwipeListener(this) {
             @Override
             public void onSwipeLeft() {
-                Log.d("SWIPE", "LEFT");
                 promptForSaveSettings();
             }
         });
@@ -130,7 +129,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             }
         });
 
-        Button btnPickdate = (Button) findViewById(R.id.cceBtnDatePicker);
+        Button btnPickdate = findViewById(R.id.cceBtnDatePicker);
         btnPickdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,10 +165,10 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             certificate.setmUId(UUID.randomUUID().toString());
             certificate.setmUserUid(mAuth.getCurrentUser().getUid());
         }
-
         certificate.setmExpirationDate(dateText.getText().toString());
         certificate.setmExpirationDate(dateText.getText().toString());
         certificate.setmName(mTextCertName.getText().toString());
+
         //If an image has been chosen, then it uploads that to the database
         if (mCurrentImageUri != null) {
             mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path + certificate.getmUId(), new UploadCallBack() {
