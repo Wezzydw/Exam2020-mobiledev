@@ -10,10 +10,8 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string-array name="spnActionChoice">
+        <item>None</item>
         <item>Alphabetical</item>
         <item>Expiration Date</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
     </string-array>
 </resources>
