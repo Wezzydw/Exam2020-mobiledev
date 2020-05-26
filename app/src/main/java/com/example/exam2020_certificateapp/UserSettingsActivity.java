@@ -3,47 +3,32 @@ package com.example.exam2020_certificateapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.example.exam2020_certificateapp.helpers.DownloadImageTask;
 import com.example.exam2020_certificateapp.helpers.PhotoHelper;
-
-import com.example.exam2020_certificateapp.helpers.PhotoHolder;
 import com.example.exam2020_certificateapp.helpers.UploadCallBack;
 import com.example.exam2020_certificateapp.model.User;
-
 import com.example.exam2020_certificateapp.swipe.OnSwipeListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class UserSettingsActivity extends AppCompatActivity {
 
@@ -61,7 +46,6 @@ public class UserSettingsActivity extends AppCompatActivity {
     private FirebaseFirestore mDb; // Firebase firestore
     FirebaseStorage storage; // Firebase storage
     StorageReference storageReference; // storage reference
-    private byte[] byteArray; // Bytearray to hold image picked by user
     private PhotoHelper mPhotoHelper; // class to help with getting images from urls
 
     @Override
@@ -134,8 +118,7 @@ public class UserSettingsActivity extends AppCompatActivity {
         mEditTextPassword.setText("");
         mEditTextPhone.setText(mUser.getmPhone());
         mEditTextUsername.setText(mUser.getmUserName());
-        if(mUser.getmImageUrl() != null)
-        {
+        if (mUser.getmImageUrl() != null) {
             new DownloadImageTask((ImageView) mImageViewProfilePicture).execute(mUser.getmImageUrl());
         }
     }
@@ -153,9 +136,11 @@ public class UserSettingsActivity extends AppCompatActivity {
     void helperOpenGallery() {
         mPhotoHelper.openGallery();
     }
+
     /**
      * Whenever an activity finishes this method is called, then it uses requestcode to determine what view
      * and if resultcode is RESULT_OK, then data can be used to retrieve information
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -221,7 +206,8 @@ public class UserSettingsActivity extends AppCompatActivity {
 
     /**
      * Saves the settings that has been entered in the different textfields and attaches it to the user
-     * then uploads it to firebase
+     * Also checks if an image has been chosen by the user
+     * then calls upload to firebase
      */
     void saveSettings() {
         final User user = new User();
@@ -233,62 +219,70 @@ public class UserSettingsActivity extends AppCompatActivity {
         user.setmImageUrl(mUser.getmImageUrl());
         user.setmUId(mUser.getmUId());
         String path = "images/" + mUser.getmUId() + "/profilePicture";
-//fix som i certifcvate ce
-        mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
-            @Override
-            public void onCallback(boolean state) {
-                if (state == true) {
-                    storageReference.child("images/" + mUser.getmUId() + "/profilePicture").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            //if image is successfully
-                            user.setmImageUrl(uri.toString());
-                            mDb.collection("users").document(mUser.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
-                                    succesSaving.show();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast errorSavingChanges = Toast.makeText(UserSettingsActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
-                                    errorSavingChanges.show();
-                                }
-                            });
-                            Bitmap bitmap = mPhotoHelper.getBitmap(mCurrentImageUri);
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                            byteArray = stream.toByteArray();
-                            PhotoHolder extras = PhotoHolder.getInstance();
-                            Intent result = new Intent();
-                            result.putExtra("updatedUser", user);
-                            extras.putExtra("profilePic", byteArray);
-                            setResult(RESULT_OK, result);
-
-                            finish();
-                        }
-                    });
+        if (mCurrentImageUri != null) {
+            mPhotoHelper.uploadImageToFirebase(mCurrentImageUri, path, new UploadCallBack() {
+                @Override
+                public void onCallback(boolean state) {
+                    if (state == true) {
+                        storageReference.child("images/" + mUser.getmUId() + "/profilePicture").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                //if image is successfully
+                                user.setmImageUrl(uri.toString());
+                                saveInFirebase(user);
+                            }
+                        });
+                    }
                 }
+            });
+        } else {
+            saveInFirebase(user);
+        }
+
+    }
+
+    /**
+     * Takes a user and saves it in firebase
+     *
+     * @param user
+     */
+    private void saveInFirebase(final User user) {
+        mDb.collection("users").document(user.getmUId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast succesSaving = Toast.makeText(UserSettingsActivity.this, "Succesfully Saved Changes", Toast.LENGTH_LONG);
+                succesSaving.show();
+                Intent result = new Intent();
+                result.putExtra("updatedUser", user);
+                setResult(RESULT_OK, result);
+                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast errorSavingChanges = Toast.makeText(UserSettingsActivity.this, "Error Saving Changes", Toast.LENGTH_LONG);
+                errorSavingChanges.show();
             }
         });
     }
 
-    private void saveInFirebase(User user){
-
-    }
-
+    /**
+     * Overrides the method for the back button, to prompt the user a change to save changes
+     */
     @Override
     public void onBackPressed() {
         promptForSaveSettings();
     }
 
-
+    /**
+     * Makes a popup when trying to leave the activity, which asks for whether
+     * or not the user wants to save the data changes
+     */
     void promptForSaveSettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Savesettings");
+        builder.setTitle("Save settings");
         builder.setMessage("Save changes?");
-        builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 saveSettings();
@@ -305,6 +299,5 @@ public class UserSettingsActivity extends AppCompatActivity {
         });
         AlertDialog alert = builder.create();
         alert.show();
-}
-
+    }
 }
