@@ -138,7 +138,7 @@ public class UserSettingsActivity extends AppCompatActivity {
             }
         });
     }
-
+    // Drillepind
     void initializeDisplayOfData() {
         mEditTextEmail.setText(mUser.getmEmail());
         mEditTextName.setText(mUser.getmName());
