@@ -12,16 +12,19 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,6 +48,7 @@ public class PhotoHelper {
     /**
      * Constructor for photohelper that uses the Context, Activity and package manager from what
      * ever activity that creates an instance of this
+     *
      * @param cont
      * @param activity
      * @param packageManager
@@ -61,6 +65,7 @@ public class PhotoHelper {
      * Checks for permissions needed to use photohelper
      * Should be called at least once whenever the first method is used to ask the user for permissions
      * However some methods in Photo Helper calls check permission as a safety net in case if it not being used
+     *
      * @return true if all permissions are already granted. If at least permission is missing,
      * it will return false, and ask the user for permission
      */
@@ -70,8 +75,7 @@ public class PhotoHelper {
             ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
             return false;
         }
-        if(ContextCompat.checkSelfPermission(mCont, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(mCont, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //Ask permission
             ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             return false;
@@ -86,22 +90,22 @@ public class PhotoHelper {
 
     /**
      * Gets a bitmap from the given uri
+     *
      * @param uri
      * @return bitmap
      * @throws FileNotFoundException if the file is not found
      */
     public Bitmap getBitmap(Uri uri) throws FileNotFoundException {
-            InputStream imageStream = mActivity.getContentResolver().openInputStream(uri);
-            Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-            return bitmap;
+        InputStream imageStream = mActivity.getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+        return bitmap;
     }
 
     /**
      * Opens the camera, if a picture is taken, saves it into an image file
      */
     public void openCamera() {
-        if(checkPermissions())
-        {
+        if (checkPermissions()) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(mPackageManager) != null) {
                 File photoFile = null;
@@ -112,29 +116,29 @@ public class PhotoHelper {
                     Toast.makeText(mCont, "Error saving image", Toast.LENGTH_LONG);
                 }
 
-                if(photoFile != null) {
+                if (photoFile != null) {
                     Uri photoURI = FileProvider.getUriForFile(mCont, "com.example.android.fileprovider", photoFile);
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     mActivity.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 }
             }
         }
-        }
+    }
 
     /**
      * Opens the phones gallery app, and lets the user choose an image
      */
     public void openGallery() {
 
-            if(checkPermissions())
-            {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                mActivity.startActivityForResult(galleryIntent, REQUEST_IMAGE_UPLOAD);
-            }
+        if (checkPermissions()) {
+            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            mActivity.startActivityForResult(galleryIntent, REQUEST_IMAGE_UPLOAD);
+        }
     }
 
     /**
-     *  Creates an image with a timestamp in its name. Then saves the image path in mCurrentPhotoPath
+     * Creates an image with a timestamp in its name. Then saves the image path in mCurrentPhotoPath
+     *
      * @return the image file created
      * @throws IOException if the file fails to create
      */
@@ -151,6 +155,7 @@ public class PhotoHelper {
      * Uploads an image from the given filepath(Uri) to the firebase storagereference with the path
      * It takes a callback to let the program know when the task is done
      * While uploading it will use a progress dialog to let the user know how far along the process is
+     *
      * @param filepath
      * @param path
      * @param callBack
@@ -190,6 +195,7 @@ public class PhotoHelper {
 
     /**
      * Get the current photo path
+     *
      * @return current photo path
      */
     public String getmCurrentPhotoPath() {
