@@ -45,19 +45,21 @@ import java.util.Comparator;
 import java.util.Date;
 
 public class CertificateListActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    User user;
-    ArrayList<Certificate> certificates = new ArrayList<Certificate>();
-    private FirebaseFirestore mDb;
-    private StorageReference mStorageRef;
-    private FirebaseAuth mAuth;
-    private ImageView profilePic;
-    ListView lv;
-    private Spinner spinner;
-    private EditText mTxtSearch;
-    private String mCurrentSearchString = "";
-    private int index = -1;
-    private ProgressDialog dialog;
-    private PhotoHolder mPhotoHolder;
+    User user; //Logged in user
+    ArrayList<Certificate> certificates = new ArrayList<>(); //Global list of certificates
+    private FirebaseFirestore mDb; //Firebase connection
+    private StorageReference mStorageRef; //Firebase storage reference
+    private FirebaseAuth mAuth; // Firebase Authtentication connection
+    private ImageView profilePic; //Imageview for users profile picture
+    ListView lv; //Listview
+    private Spinner spinner; //Spinner to select which sorting method is being used
+    private EditText mTxtSearch; //EditText to type in search strings
+    private String mCurrentSearchString = ""; //String to hold what is currently being searched for
+    private int index = -1; //Index for how many certificates there is coming from database
+    private ProgressDialog dialog; //Loading icon
+    private PhotoHolder mPhotoHolder; //Static class to hold and share large data between activities
+    private final static int REQUEST_CODE_USER_SETTINGS = 10;
+    private final static int REQUEST_CODE_CERTIFICATE_CE = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +119,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), CertificateCEActivity.class);
-                startActivityForResult(intent, 30);
+                startActivityForResult(intent, REQUEST_CODE_CERTIFICATE_CE);
             }
         });
         profilePic.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +131,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     }
 
     /**
-     * Call this method to download all certificates
+     * Call this method to download all certificates from logged in user
      */
     private void getAllCertificatesFromUser() {
         mDb.collection("certificates").whereEqualTo("mUserUid", user.getmUId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -194,33 +196,42 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
             // creates the adapter with the sorted list of certificates
             CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), sortCertificates);
             lv.setAdapter(customAdapter);
+            //Sets a OnItemClickListener to select which certificate is pressed
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                //Starts certificateCEActivity with the selected Certificate
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(view.getContext(), CertificateCEActivity.class);
                     Certificate cert = sortCertificates.get(position);
                     intent.putExtra("cert", cert);
                     intent.putExtra("position", position);
-                    startActivityForResult(intent, 20);
+                    startActivityForResult(intent, REQUEST_CODE_CERTIFICATE_CE);
                 }
             });
         }
     }
 
     /**
-     * Starts the usersettingsview
+     * Starts the usersettingsactivity
      */
     private void redirectToSettings() {
         Intent intent = new Intent(this, UserSettingsActivity.class); //settings activity
         intent.putExtra("user", user);
-        startActivityForResult(intent, 10);
+        startActivityForResult(intent, REQUEST_CODE_USER_SETTINGS);
     }
-
+    /**
+     * Whenever an activity finishes this method is called, then it uses requestcode to determine what view
+     * and if resultcode is RESULT_OK, then data can be used to retrieve information
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 10) {
+        if (requestCode == REQUEST_CODE_USER_SETTINGS) {
             if (resultCode == RESULT_OK) {
+                //Checks if the intent returns information to delete user
                 if (data.getExtras().get("delete") != null && data.getExtras().get("delete").equals(true)) {
                     finish();
                 } else {
@@ -230,19 +241,21 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 }
             }
         }
-
-        if (requestCode == 20) {
-            certificates.clear();
-            progressBar();
-            getAllCertificatesFromUser();
-        }
-        if (requestCode == 30) {
+        if (requestCode == REQUEST_CODE_CERTIFICATE_CE) {
             certificates.clear();
             progressBar();
             getAllCertificatesFromUser();
         }
     }
 
+    /**
+     * Whenever the spinner for sorting is used, this method is called
+     *
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
