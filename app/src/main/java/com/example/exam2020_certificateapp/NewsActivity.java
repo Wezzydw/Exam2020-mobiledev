@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.JsonReader;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -13,84 +14,62 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.exam2020_certificateapp.model.News;
 import com.example.exam2020_certificateapp.swipe.NewsAdapter;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.security.Key;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-
 public class NewsActivity extends AppCompatActivity {
-
-    private ViewPager viewPager;
-    private NewsAdapter newsAdapter;
-    private ProgressDialog dialog;
-    private ArrayList<News> l = new ArrayList<>();
-    private Handler mHandler = new Handler();
+    private final static int CONNECTION_TIMEOUT = 5000;
+    private ViewPager viewPager; //Viewpager this displays our swipes
+    private NewsAdapter newsAdapter; //Adapter this creates our pages for our viewpager
+    private ProgressDialog dialog; //Loading dialog
+    private ArrayList<News> listOfNews = new ArrayList<>(); //List of news
+    private Handler mHandler = new Handler(); // Handler to return to gui thread
     private Runnable mUpdateResults = new Runnable() {
         @Override
         public void run() {
             updateUI();
         }
-    };
+    }; //Calls GUI Thread to ensure correct updates
+    private Runnable mCallToastError = new Runnable() {
+        @Override
+        public void run() {
+            toastError();
+        }
+    }; //Calls GUI Thread to ensure correct updates
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
         viewPager = findViewById(R.id.newsViewPager);
-        newsAdapter = new NewsAdapter(getSupportFragmentManager(), l);
+        newsAdapter = new NewsAdapter(getSupportFragmentManager(), listOfNews);
         viewPager.setAdapter(newsAdapter);
-        //progressBar();
+        downloadNewsFromRestAPI();
+    }
+
+    /**
+     * Initiates a download of news from RESTAPI which will be done from another thread
+     */
+    private void downloadNewsFromRestAPI() {
+        progressBar();
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    /*CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                    InputStream caInput = getAssets().open("certificate_der.crt");
-                    //InputStream caInput = new BufferedInputStream(new FileInputStream(getAssets().open("certifcate_der.crt")));
-                    Certificate ca;
-                    ca = cf.generateCertificate(caInput);
-                    System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
-
-                    String keyStoreType = KeyStore.getDefaultType();
-                    KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-                    keyStore.load(null, null);
-                    keyStore.setCertificateEntry("ca", ca);
-
-                    String tmfAlgo = TrustManagerFactory.getDefaultAlgorithm();
-                    TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgo);
-                    tmf.init(keyStore);
-
-                    SSLContext context = SSLContext.getInstance("TLS");
-                    context.init(null, tmf.getTrustManagers(), null);
-*/
                     URL restapi = null;
                     restapi = new URL("http://192.168.0.111:5000/api/news");
                     HttpURLConnection connection = null;
 
                     connection = (HttpURLConnection) restapi.openConnection();
-                    //connection.setSSLSocketFactory(context.getSocketFactory());
-
+                    connection.setConnectTimeout(CONNECTION_TIMEOUT);
                     if(connection.getResponseCode() == 200)
                     {
                     } else {
@@ -100,52 +79,55 @@ public class NewsActivity extends AppCompatActivity {
                     responseBody = connection.getInputStream();
                     responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
                     JsonReader jsonReader = new JsonReader(responseBodyReader);
-
-                    /*jsonReader.beginArray();
-                    jsonReader.beginObject();
-                    List<String> tempList = new ArrayList<>();
-
-                    while (jsonReader.hasNext())
-                    {
-                        String key = jsonReader.nextName();
-                        tempList.add(key);
-                        String value = jsonReader.nextString();
-                        tempList.add(value);
-                    }
-                    jsonReader.close();*/
                     List<News> tempList = readNewsArray(jsonReader);
                     connection.disconnect();
-                    for (News a : tempList) {
-                        Log.d("RESTAPI", a.getTitle() + " Id: " + a.getId());
-                        //l.add(a.getNewsText());
-                    }
-                    //l.add(tempList.get(0).getNewsText());
-                    //l.add(tempList.get(1).getNewsText());
-                    l.addAll(tempList);
+                    listOfNews.addAll(tempList);
                     mHandler.post(mUpdateResults);
-                    Log.d("RESTAPI", tempList.size()+" size");
-                } catch ( FileNotFoundException |    MalformedURLException e) {
+                } catch ( FileNotFoundException | MalformedURLException | SocketTimeoutException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
+                } finally {
+                    mHandler.post(mCallToastError);
+                    dialog.dismiss();
+                    finish();
                 }
             }
         });
     }
 
+    /**
+     * Starts a dialog which display a loading icon until stopped by calling dialog.dismiss();
+     */
     private void progressBar(){
-        Log.d("TAG","ProgressBar?");
         dialog = new ProgressDialog(NewsActivity.this);
         dialog.show();
         dialog.setContentView(R.layout.progress_loading_certificates);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
     }
 
+    /**
+     * Notifies newsAdapter that the data it is currently using has been updated
+     */
     private void updateUI() {
         newsAdapter.notifyDataSetChanged();
-        //dialog.dismiss();
     }
 
+    /**
+     * Calls a toast that displays an error to user
+     */
+    private void toastError() {
+        Toast ErrorConnectingToRESTAPI = Toast.makeText(NewsActivity.this, "Error Connecting to Server", Toast.LENGTH_LONG);
+        ErrorConnectingToRESTAPI.show();
+    }
+
+    /**
+     * Consumes the [] from a json, which gives all objects{} in that array
+     * By using jsonreader as the base object, it then extracts all objects from the array
+     * @param jsonReader
+     * @return a list of news
+     * @throws IOException if anything goes wrong with the jsonreaders methods
+     */
     private List<News> readNewsArray(JsonReader jsonReader)throws IOException {
         List<News> newsList = new ArrayList<>();
         jsonReader.beginArray();
@@ -157,6 +139,12 @@ public class NewsActivity extends AppCompatActivity {
         return newsList;
     }
 
+    /**
+     * Extracts all data in a given json object{}
+     * @param jsonReader
+     * @return a news object with that data
+     * @throws IOException if anything goes wrong with the jsonreaders methods
+     */
     private News readNewsObject(JsonReader jsonReader) throws IOException {
         News news = new News();
         jsonReader.beginObject();

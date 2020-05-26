@@ -10,10 +10,6 @@ public class News {
     }
 
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -29,4 +25,9 @@ public class News {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 }
