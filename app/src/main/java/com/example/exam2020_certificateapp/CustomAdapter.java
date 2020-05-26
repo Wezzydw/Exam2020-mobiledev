@@ -37,7 +37,7 @@ public class CustomAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Certificate getItem(int position) {
         return null;
         //return certificate;
     }

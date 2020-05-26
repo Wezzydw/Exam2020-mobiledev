@@ -73,6 +73,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
         mDb = FirebaseFirestore.getInstance();
         dateText = findViewById(R.id.cceTWDate);
         mCert = (Certificate) getIntent().getSerializableExtra("cert");
+        Log.d("WTF", mCert.getmPhoto());
         mTextCertName = findViewById(R.id.cceETCertName);
         mAuth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -103,7 +104,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 deleteCertificate();
             }
         });
-
         Button mBtnTakePicture = findViewById(R.id.cceBtnTakePic);
         mBtnTakePicture.setOnClickListener(new View.OnClickListener() {
                                                @Override
@@ -112,7 +112,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                                                }
                                            }
         );
-
         Button mBtnPictureFromPhone = findViewById(R.id.cceBtnPicFromLib);
         mBtnPictureFromPhone.setOnClickListener(new View.OnClickListener() {
                                                     @Override
@@ -128,7 +127,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 save();
             }
         });
-
         Button btnPickdate = findViewById(R.id.cceBtnDatePicker);
         btnPickdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,12 +135,10 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 datePicker.show(getSupportFragmentManager(), "date picker");
             }
         });
-        if(mCert != null)
-        {
+        if (mCert != null) {
             initializeDisplayOfData();
             mBtnSave.setText("Save Changes");
-        }
-        else {
+        } else {
             mBtnSave.setText("Create new Certificate");
         }
     }
@@ -150,7 +146,6 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
     /**
      * When called, creates a fresh certificate and fills it with data.
      * Specific data depends on what "state" the activity is in either Create or Update
-     *
      */
     private void save() {
         final String path = "images/" + mAuth.getCurrentUser().getUid() + "/certificates/";
@@ -184,7 +179,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                                 saveInFirebase(certificate);
                             }
                         });
-                }
+                    }
                 }
             });
         } else {
@@ -194,6 +189,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
 
     /**
      * Takes a certificate and saves that in the database
+     *
      * @param certificate
      */
     void saveInFirebase(final Certificate certificate) {
@@ -218,36 +214,36 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
      * or not the user wants to save the data changes
      */
     void promptForSaveSettings() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Savesettings");
-            builder.setMessage("Save changes?");
-            builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    save();
-                }
-            });
-            builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    finish();
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Savesettings");
+        builder.setMessage("Save changes?");
+        builder.setPositiveButton("YeS", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                save();
+            }
+        });
+        builder.setNegativeButton("No sir", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     /**
-     *  Sets up the display of data for the textfields and imageview
+     * Sets up the display of data for the textfields and imageview
      */
-    void initializeDisplayOfData(){
+    void initializeDisplayOfData() {
         dateText.setText(mCert.getmExpirationDate());
         mTextCertName.setText(mCert.getmName());
         //checks whether the certificate has an image or not, before trying to download the image
-        if(mCert.getmPhoto() != null)
-        {
+        Log.d("DTASK", mCert.getmPhoto());
+        if (mCert.getmPhoto() != null) {
             new DownloadImageTask((ImageView) mImageView).execute(mCert.getmPhoto());
         }
 
@@ -255,6 +251,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
 
     /**
      * When using the datepicker, upon choosing a date, this method is revoked
+     *
      * @param view
      * @param year
      * @param month
@@ -272,6 +269,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
 
     /**
      * Whenever an activity finishes this method is called
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -287,7 +285,7 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
             uri = data.getData();
         }
         // Checks uri and sets the bitmap for displaying the new image
-        if(uri != null) {
+        if (uri != null) {
             mCurrentImageUri = uri;
             mBitmap = mPhotoHelper.getBitmap(uri);
             mImageView.setImageBitmap(mBitmap);
