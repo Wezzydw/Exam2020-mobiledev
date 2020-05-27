@@ -43,7 +43,7 @@ public class NewsActivity extends AppCompatActivity {
         public void run() {
             toastError();
         }
-    }; //Calls GUI Thread to ensure correct updates
+    }; //Calls GUI Thread to ensure toast is run in gui
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
