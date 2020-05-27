@@ -244,7 +244,6 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
         }
         if (requestCode == REQUEST_CODE_CERTIFICATE_CE) {
             certificates.clear();
-            progressBar();
             getAllCertificatesFromUser();
         }
     }
