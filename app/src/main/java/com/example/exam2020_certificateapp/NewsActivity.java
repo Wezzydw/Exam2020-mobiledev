@@ -83,14 +83,17 @@ public class NewsActivity extends AppCompatActivity {
                     connection.disconnect();
                     listOfNews.addAll(tempList);
                     mHandler.post(mUpdateResults);
+                    if(tempList.isEmpty())
+                    {
+                        mHandler.post(mCallToastError);
+                    }
+                    dialog.dismiss();
                 } catch ( FileNotFoundException | MalformedURLException | SocketTimeoutException e) {
                     e.printStackTrace();
+                    mHandler.post(mCallToastError);
                 } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
                     mHandler.post(mCallToastError);
-                    dialog.dismiss();
-                    finish();
                 }
             }
         });
@@ -119,6 +122,8 @@ public class NewsActivity extends AppCompatActivity {
     private void toastError() {
         Toast ErrorConnectingToRESTAPI = Toast.makeText(NewsActivity.this, "Error Connecting to Server", Toast.LENGTH_LONG);
         ErrorConnectingToRESTAPI.show();
+        dialog.dismiss();
+        finish();
     }
 
     /**
