@@ -38,7 +38,6 @@ public class UserSettingsActivity extends AppCompatActivity {
     ImageView mImageViewProfilePicture; //Image view for profile picture
     EditText mEditTextName; // Edit text for users name
     EditText mEditTextUsername; // Edit text for users username
-    EditText mEditTextPassword; //Edit text for users password
     EditText mEditTextPhone; // Edit text for users phonenumber
     EditText mEditTextEmail; // Edit text for users email
     User mUser; // Selected user
@@ -65,7 +64,6 @@ public class UserSettingsActivity extends AppCompatActivity {
         Button mBtnDeleteUser = findViewById(R.id.settingsBtnDeleteUser);
         mEditTextName = findViewById(R.id.settingsInputName);
         mEditTextUsername = findViewById(R.id.settingsInputUsername);
-        mEditTextPassword = findViewById(R.id.settingsInputPassword);
         mEditTextPhone = findViewById(R.id.settingsInputPhone);
         mEditTextEmail = findViewById(R.id.settingsInputEmail);
         View.OnClickListener buttons = new View.OnClickListener() {
@@ -117,7 +115,6 @@ public class UserSettingsActivity extends AppCompatActivity {
     void initializeDisplayOfData() {
         mEditTextEmail.setText(mUser.getmEmail());
         mEditTextName.setText(mUser.getmName());
-        mEditTextPassword.setText("");
         mEditTextPhone.setText(mUser.getmPhone());
         mEditTextUsername.setText(mUser.getmUserName());
         if (mUser.getmImageUrl() != null) {

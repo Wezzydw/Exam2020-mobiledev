@@ -52,6 +52,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
     private FirebaseAuth mAuth; // Firebase Authtentication connection
     private ImageView profilePic; //Imageview for users profile picture
     ListView lv; //Listview
+    TextView textUserName; //Edit text to hold users name
     private Spinner spinner; //Spinner to select which sorting method is being used
     private EditText mTxtSearch; //EditText to type in search strings
     private String mCurrentSearchString = ""; //String to hold what is currently being searched for
@@ -95,7 +96,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
             public void afterTextChanged(Editable s) {
             }
         });
-        TextView textUserName = findViewById(R.id.textUserName);
+        textUserName = findViewById(R.id.textUserName);
         textUserName.setText(user.getmUserName());
         getAllCertificatesFromUser();
 
@@ -238,6 +239,7 @@ public class CertificateListActivity extends AppCompatActivity implements Adapte
                 } else {
                     User updatedUser = (User) data.getExtras().getSerializable("updatedUser");
                     user = updatedUser;
+                    textUserName.setText(user.getmUserName());
                     getImageForUser();
                 }
             }
