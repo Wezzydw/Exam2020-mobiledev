@@ -173,7 +173,9 @@ public class CertificateCEActivity extends AppCompatActivity implements DatePick
                 public void onCallback(boolean state) {
                     if (state == true) {
                         //Then gets the url for the newly uploaded image
-                        storageReference.child("images/" + certificate.getmUserUid() + "/certificates/" + certificate.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        storageReference.child("images/" + certificate.getmUserUid()
+                                + "/certificates/"
+                                + certificate.getmUId()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
                                 certificate.setmPhoto(uri.toString());
