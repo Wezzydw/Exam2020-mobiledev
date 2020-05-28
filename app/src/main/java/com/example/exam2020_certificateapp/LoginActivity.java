@@ -91,7 +91,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-
                             FirebaseUser user = mAuth.getCurrentUser();
                             getUser(user.getUid());
                         } else {
@@ -127,8 +126,6 @@ public class LoginActivity extends AppCompatActivity {
                                 User tempUser = document.toObject(User.class);
                                 startCertificateListActivity(tempUser);
                             }
-                        } else {
-
                         }
                     }
                 });
