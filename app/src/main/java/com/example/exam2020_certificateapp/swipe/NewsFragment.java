@@ -19,18 +19,28 @@ import javax.annotation.Nullable;
 
 public class NewsFragment extends Fragment {
 
-    public static final String ARG_OBJECT = "object";
-
-
+    /**
+     * uses a standard formula where the only thing done we specify is what xml to use
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@Nonnull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.swipe_news_container, container, false);
     }
 
+    /**
+     * fills the view components with the data from the bundle.
+     * @param view
+     * @param savedInstanceState
+     */
     @Override
     public void onViewCreated(@Nonnull View view, @Nullable Bundle savedInstanceState) {
         final Bundle args = getArguments();
+        //Initialize buttons
         Button button0 = view.findViewById(R.id.swipe_news_btnOpenLink);
         button0.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +81,7 @@ public class NewsFragment extends Fragment {
                 startActivity(browserIntent);
             }
         });
+        //Initialize news text
         ((TextView)view.findViewById(R.id.newsTxtNewsHeader)).setText((args.getString("title0")));
         ((TextView)view.findViewById(R.id.newsTxtNewsHeader1)).setText((args.getString("title1")));
         ((TextView)view.findViewById(R.id.newsTxtNewsHeader2)).setText((args.getString("title2")));

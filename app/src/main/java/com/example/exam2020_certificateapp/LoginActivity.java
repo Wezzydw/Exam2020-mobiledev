@@ -73,12 +73,6 @@ public class LoginActivity extends AppCompatActivity {
         final EditText getEmail = findViewById(R.id.loginEtUsername);
         EditText getPassword = findViewById(R.id.loginEtPassword);
 
-        //AUTO LOGIN//
-        //AUTO LOGIN//
-        getEmail.setText("a@hotmail.com");
-        getPassword.setText("12345678");
-
-
         final String email = getEmail.getText().toString();
         final String password = getPassword.getText().toString();
         progressBar();

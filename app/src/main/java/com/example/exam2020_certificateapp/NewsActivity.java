@@ -65,7 +65,7 @@ public class NewsActivity extends AppCompatActivity {
             public void run() {
                 try {
                     URL restapi = null;
-                    restapi = new URL("http://192.168.0.111:5000/api/news");
+                    restapi = new URL("http://77.75.161.9:1337/api/news");
                     HttpURLConnection connection = null;
 
                     connection = (HttpURLConnection) restapi.openConnection();
